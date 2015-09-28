@@ -1,0 +1,11 @@
+bin/
+doc/
+out/
+/xml/*
+*.log
+*.log.*
+*.xml
+!DZMSKELS.xml
+!ivy.xml
+!build.xml
+*.jar

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SKELETONS>
+<SKELS SKELNAME="SKEL001">
+		return this.%_%0%;
+</SKELS>
+<SKELS SKELNAME="SKEL002">
+			this.%_%0% = %_%0%;
+</SKELS>
+<SKELS SKELNAME="SKEL003">
+%_%0%this.%_%1% = new ArrayList&lt;%_%2%&gt;();
+</SKELS>
+<SKELS SKELNAME="SKEL004">
+			%_%0%.%_%1%     (%_%2%);
+</SKELS>
+<SKELS SKELNAME="SKEL005">
+		StringBuffer buf	= new StringBuffer();
+</SKELS>
+<SKELS SKELNAME="SKEL006">
+		buf.append			("[%_%0%="+%_%1%+"]");
+</SKELS>
+<SKELS SKELNAME="SKEL007">
+		return				buf.toString();
+</SKELS>
+<SKELS SKELNAME="SKEL030">
+		final int prime = 31;
+		int hash = %_%0%;
+</SKELS>
+<SKELS SKELNAME="SKEL031">
+		hash = hash * prime + (int) (%_%0% ^ (%_%0% &gt;&gt;&gt; 32));
+</SKELS>
+<SKELS SKELNAME="SKEL032">
+		hash = hash * prime  + ((%_%0% == null) ? 0 : %_%0%.hashCode());
+</SKELS>
+<SKELS SKELNAME="SKEL033">
+		return hash;
+</SKELS>
+<SKELS SKELNAME="SKEL034">
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		%_%0% other = (%_%0%) obj;
+</SKELS>
+<SKELS SKELNAME="SKEL035">
+		if (%_%1% == null) {
+			if (other.%_%1% != null)
+				return false;
+		} else if (!%_%1%.equals(other.%_%1%))
+			return false;
+		return true;
+</SKELS>
+<SKELS SKELNAME="SKEL036">
+		if (%_%1% != other.%_%1%)
+			return false;
+		return true;
+
+</SKELS>
+<SKELS SKELNAME="SKEL037">
+		if (this == other) {
+			return true;
+		}
+		if (!(other instanceof %_%0%)) {
+			return false;
+		}
+		%_%0% castOther = (%_%0%)other;
+		return 
+</SKELS>
+<SKELS SKELNAME="SKEL038">
+			%_%0% this.%_%1%.equals(castOther.%_%1%) 
+</SKELS>
+<SKELS SKELNAME="SKEL038A">
+			%_%0% this.%_%1% == castOther.%_%1% 
+</SKELS>
+<SKELS SKELNAME="SKEL039">
+			; 
+</SKELS>
+</SKELETONS>
