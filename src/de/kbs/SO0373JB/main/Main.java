@@ -3,7 +3,7 @@ package de.kbs.SO0373JB.main;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Properties;
+//import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -13,7 +13,7 @@ import de.kbs.SO0373JB.business.JPAClazz;
 import de.kbs.SO0373JB.business.SpringRepository;
 import de.kbs.SO0373JB.common.config.Configuration;
 import de.kbs.SO0373JB.db2.Db2Table;
-import de.kbs.SO0373JB.xml.BuildXML;
+//import de.kbs.SO0373JB.xml.BuildXML;
 import de.kbs.SO0373JB.xml.IvyXML;
 
 public class Main {
@@ -24,7 +24,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		doGener				("resources/configuration/SO0373JB.xml");
+		doGener				("z:/config/SO0373JB/SO0373JB.xml");
 		
 	}
 
@@ -49,14 +49,13 @@ public class Main {
  								(null, message);
 
  		IvyXML.createIvyXml		(configuration.getProjectPath()+"\\ivy.xml");
-		IvyXML.createIvySettings(configuration.getProjectPath()+"\\ivyjpasettings.xml");
-		BuildXML.createBuildXml	(configuration.getProjectPath()+"\\build.xml", configuration.getPackage());
-		writeBuildProperties	();
+//		IvyXML.createIvySettings(configuration.getProjectPath()+"\\ivyjpasettings.xml");
+//		BuildXML.createBuildXml	(configuration.getProjectPath()+"\\build.xml", configuration.getPackage());
+//		writeBuildProperties	();
 		
 		JOptionPane.showMessageDialog
 								(null, "<html>Konfigurationsdateien wurden erstellt<br><br>"
-								+ "<i>ivy.xml<br>ivyjpasettings.xml<br>"
-								+ "build.xml<br>build.properties</html>");
+								+ "<i>ivy.xml</html>");
 	}
 	
 	public static boolean tableExists (String tbna) {
@@ -80,18 +79,18 @@ public class Main {
 		}
 	}
 
-	private static void writeBuildProperties() {
-		Properties prop		= new Properties();
-		prop.setProperty	("ivy.organisation", "de.kbs");
-		prop.setProperty	("ivy.module", configuration.getModuleName());
-		prop.setProperty	("ivy.revision", "1.0.0");
-		prop.setProperty	("ivy.settings.file", "ivyjpasettings.xml");
-		try {
-			prop.store			( new FileWriter(configuration.getProjectPath()+File.separator+"build.properties")
-								, "Ant-build-File\n"
-								+ "Properties für das Build-File mit jar-Erzeugung und Ivy-Anbindung");
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Fehler: "+e.getMessage());
-		}	
-	}
+//	private static void writeBuildProperties() {
+//		Properties prop		= new Properties();
+//		prop.setProperty	("ivy.organisation", "de.kbs");
+//		prop.setProperty	("ivy.module", configuration.getModuleName());
+//		prop.setProperty	("ivy.revision", "1.0.0");
+//		prop.setProperty	("ivy.settings.file", "ivyjpasettings.xml");
+//		try {
+//			prop.store			( new FileWriter(configuration.getProjectPath()+File.separator+"build.properties")
+//								, "Ant-build-File\n"
+//								+ "Properties für das Build-File mit jar-Erzeugung und Ivy-Anbindung");
+//		} catch (IOException e) {
+//			JOptionPane.showMessageDialog(null, "Fehler: "+e.getMessage());
+//		}	
+//	}
 }

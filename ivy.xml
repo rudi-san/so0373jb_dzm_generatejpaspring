@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-    <info organisation="de.kbs" module="SO0371JB" revision="0.1.0"/>
+    <info organisation="de.kbs" module="SO0373JB" revision="0.1.0"/>
 	<configurations>
   		<conf name="default" description="default" /> 
   	</configurations>
 	<dependencies>
-		<dependency org="de.kbs" 		name="eigenentwickelt/SO0003JC"			rev="latest.integration"/>
-		<dependency org="de.kbs" 	 	name="eigenentwickelt/SO1320JC" 		rev="latest.integration"/>
-		<dependency org="de.kbs" 		name="eigenentwickelt/SO1300JC" 		rev="latest.integration"/>
-		<dependency org="com.ibm" 		name="fremdentwickelt/DB2Typ4_Adapter"  rev="latest.integration" /> 
+		<dependency org="com.ibm.db2_adapter" 		name="db2jcc4" 	rev="4.19.26"/> 
+		<dependency org="de.kbs.kbspropertyhandler" name="SO0003JC"	rev="1.1.0"/>
+		<dependency org="de.kbs.pwcrypt"		 	name="SO1300JC"	rev="latest.integration"/>
+		<dependency org="de.kbs.kbsloghandler" 		name="SO1320JC"	rev="latest.integration"/>
  	</dependencies>
 </ivy-module>

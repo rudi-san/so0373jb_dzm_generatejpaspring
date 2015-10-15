@@ -2,6 +2,8 @@ package de.kbs.SO0373JB.common.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -62,11 +64,22 @@ public class Configuration {
 	}
 	
 	public String getLogFile () {
-		return 				propertyContainer.getProperty(LOG_FILE);
+		String fileName		= propertyContainer.getProperty(LOG_FILE);
+		if (fileName==null) {
+			try {
+				Files.createDirectories	(Paths.get("z:/", "logs"));
+				fileName				= "z:/logs/SO0373JB.log";
+			} catch (IOException e) {}
+		}
+		return fileName;
 	}
+	
 	public Level getLogLevel () {
 		String level 		= propertyContainer.getProperty(LOG_LEVEL);
-		return				Level.toLevel(level);
+		if (level==null)
+			return				Level.INFO;
+		else
+			return				Level.toLevel(level);
 	}
 	public String getJpaPath() {
 		return				getSourcePath() +File.separator+ "jpa";

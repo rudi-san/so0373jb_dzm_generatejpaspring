@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="SO0371JB" default="jarBuilder" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="${module.name}" default="jarBuilder" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" />
     <property file="build.properties" />
 	<target name="jarBuilder" description="Kreieren eines JAR Archives (${projname})">
 		<delete dir="lib"/>
-		<setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/> 
-		<ivy:settings file="${settings.file}" /> 
+		<ivy:settings file="${settings.file}" />   
 		<ivy:retrieve pathid="lib"/>
 		<jar jarfile="${module.name}.jar"  basedir="bin">
- 			<include name="de\kbs\${module.name}\**\*.class"/> 
+ 			<include name="de/kbs/${module.name}/**/*.class"/> 
  		   	<manifest>
     		  	<attribute name="Implementation-Title" value="${module.name}"/>
     		  	<attribute name="Implementation-Vendor" value="DRV KBS"/>
@@ -16,11 +15,13 @@
     		  	<attribute name="Implementation-Version" value="${revision}}"/>
 	       	</manifest>
 		</jar>
-<!--		<move file="${module.name}.jar" 
-			  todir="m:\f631\source\ant\bin" />
-		<move todir="m:\f631\source\ant\bin\lib">
+		<move file="${module.name}.jar" 
+			  todir="S:/Java/JPAGenerator" />
+		<move todir="S:/Java/JPAGenerator/lib">
 				<fileset dir="lib" />
-		</move>
--->			
+		</move>	
+		<copy todir="S:/Java/JPAGenerator/resources">
+			<fileset dir="resources" />		
+		</copy>
 	</target>
 </project>

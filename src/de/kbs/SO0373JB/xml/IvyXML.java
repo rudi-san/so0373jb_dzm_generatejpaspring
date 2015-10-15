@@ -25,14 +25,14 @@ public class IvyXML {
 	};
 	public static final String[][] attrInfo		= 	{ { "organisation", "de.kbs" }
 	};
-	public static final String[][] attrConf		= 	{ { "name", "default" }
-	};
+//	public static final String[][] attrConf		= 	{ { "name", "default" }
+//	};
 	public static final String[][] attrPubl		= 	{ { "type", "jar" }
-													, { "conf", "default" }
+//													, { "conf", "default" }
 													, { "ext", "jar" }
 	};
-	public static final String[][] attrDep		= 	{ { "org", "de.kbs" }
-													, { "name", "eigenentwickelt/SO0374JC" }
+	public static final String[][] attrDep		= 	{ { "org", "de.kbs.springdatajpa" }
+													, { "name", "SO0374JC" }
 													, { "rev", "latest.integration" }
 	};
 
@@ -57,18 +57,18 @@ public class IvyXML {
 			Element info = document.createElement("info");
 			for  (String[] attr : attrInfo)
 				info.setAttribute(attr[0], attr[1]);
-			info.setAttribute("module", "dzm/"+Configuration.getConfiguration().getModuleName());
+			info.setAttribute("module", Configuration.getConfiguration().getModuleName());
 			info.setAttribute("revision", "1.0.0");
 			root.appendChild(info);
 
-			// configurations element
-			Element configurations = document.createElement("configurations");
-			// conf element
-			Element conf = document.createElement("conf");
-			for  (String[] attr : attrConf)
-				conf.setAttribute(attr[0], attr[1]);
-			configurations.appendChild(conf);
-			root.appendChild(configurations);
+//			// configurations element
+//			Element configurations = document.createElement("configurations");
+//			// conf element
+//			Element conf = document.createElement("conf");
+//			for  (String[] attr : attrConf)
+//				conf.setAttribute(attr[0], attr[1]);
+//			configurations.appendChild(conf);
+//			root.appendChild(configurations);
 
 			// publications element
 			Element publications = document.createElement("publications");
@@ -76,7 +76,7 @@ public class IvyXML {
 			Element artifact = document.createElement("artifact");
 			for  (String[] attr : attrPubl)
 				artifact.setAttribute(attr[0], attr[1]);
-			artifact.setAttribute("name", "dzm/"+Configuration.getConfiguration().getModuleName());
+			artifact.setAttribute("name", Configuration.getConfiguration().getModuleName());
 			publications.appendChild(artifact);
 			root.appendChild(publications);
 
