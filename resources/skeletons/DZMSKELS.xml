@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SKELETONS>
 <SKELS SKELNAME="SKEL001">
-		return this.%_%0%;
+		return %_%0%;
 </SKELS>
 <SKELS SKELNAME="SKEL002">
 			this.%_%0% = %_%0%;
@@ -75,5 +75,18 @@
 </SKELS>
 <SKELS SKELNAME="SKEL039">
 			; 
+</SKELS>
+<SKELS SKELNAME="SKEL101">
+			this.set%_%0%    (%_%1%);
+</SKELS>
+<SKELS SKELNAME="SKEL102">
+			this.%_%0%.set(%_%1%);
+</SKELS>
+<SKELS SKELNAME="SKEL103">
+		try {
+			return DateFormat.getDateInstance().parse(this.%_%0%.get());
+		} catch (ParseException e) {
+			return null;
+		}
 </SKELS>
 </SKELETONS>

@@ -5,11 +5,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 //import java.util.Properties;
 
+
+
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
+import de.kbs.SO0373JB.business.Clazz;
 import de.kbs.SO0373JB.business.JPAClazz;
+import de.kbs.SO0373JB.business.FXClazz;
 import de.kbs.SO0373JB.business.SpringRepository;
 import de.kbs.SO0373JB.common.config.Configuration;
 import de.kbs.SO0373JB.db2.Db2Table;
@@ -24,7 +28,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		doGener				("z:/config/SO0373JB/SO0373JB.xml");
+		doGener				("resources/config/SO0373JB/SO0373JB.xml");
 		
 	}
 
@@ -36,10 +40,19 @@ public class Main {
 
 		tables					= configuration.getTables();
 
-		String message			= "<html>Es wurden JPA-Klassen erstellt für die Tabellen<br><br>";
+		String message			= null;
+		if (configuration.isJavaFx())
+			message				= "<html>Es wurden JPA-Klassen (JavaFX-Binding) erstellt für die Tabellen<br><br>";
+		else
+			message				= "<html>Es wurden JPA-Klassen erstellt für die Tabellen<br><br>";
+
 		for (String[] split : tables) {
 			Db2Table table			= Db2Table.createTable(split[0], split[1]);
-			JPAClazz clazz			= new JPAClazz(table);
+			Clazz clazz				= null;
+			if (configuration.isJavaFx())
+				clazz					= new FXClazz(table);
+			else
+				clazz					= new JPAClazz(table);
 			writeFile				(configuration.getJpaPath(), table.getCcName(), clazz.toString());
 			SpringRepository repo	= new SpringRepository(table);
 			writeFile				(configuration.getReposPath(), table.getCcName()+"Repository", repo.toString());

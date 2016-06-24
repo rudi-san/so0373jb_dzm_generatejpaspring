@@ -7,6 +7,7 @@ public enum DB2Type {
 	
 	private static String[] db2 = 	{ "DATE", "TIME", "TIMESTMP",  "SMALLINT", "INTEGER", "BIGINT", "FLOAT",  "DOUBLE", "DECIMAL",    "CHAR",   "VARCHAR" };
 	private static String[] java = 	{ "Date", "Time", "Timestamp", "Short",    "Integer", "Long",   "Double", "Double", "BigDecimal", "String", "String" };
+	private static String[] fx = 	{ "StringProperty", "StringProperty", "StringProperty", "IntegerProperty",    "IntegerProperty", "LongProperty",   "DoubleProperty", "DoubleProperty", "StringProperty", "StringProperty", "StringProperty" };
 	
 	public static DB2Type findType (String search) {
 		search			= search.trim();
@@ -28,4 +29,9 @@ public enum DB2Type {
 	public String getJavaString () {
 		return java[ordinal()];
 	}
+
+	public String getJavaFxString () {
+		return fx[ordinal()];
+	}
+
 }

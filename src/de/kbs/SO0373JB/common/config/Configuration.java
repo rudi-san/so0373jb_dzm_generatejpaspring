@@ -28,6 +28,7 @@ public class Configuration {
 	private static final String			JDBC_USER			= "jdbc.user";
 	private static final String			JDBC_PW				= "jdbc.pw";
 	private static final String			JDBC_PWCODE			= "jdbc.pwcode";
+	private static final String			IS_JAVAFX			= "fx.select";
 	
 	private Configuration(String fileName)  {
 		initialisiereKBSPropertyHandler		(fileName);
@@ -93,7 +94,7 @@ public class Configuration {
 		return				rootPath + File.separator + project;
 	}
 	public String getPackage () {
-		return				"de.kbs." + getModuleName().toLowerCase();
+		return				"de.kbs." + getModuleName().toLowerCase() + ".persistence";
 		
 	}
 	public String getSourcePath () {
@@ -102,11 +103,17 @@ public class Configuration {
 							getPackage().replace('.', File.separatorChar);
 	}
 	public String getModuleName() {
-		String project		= propertyContainer.getProperty(WORK_PROJECT);
-		return				project.substring(0, project.indexOf('_'));
+		String[] project	= propertyContainer.getProperty(WORK_PROJECT).split("_");
+		return				project[0];
 	}
 	public String getJdbcUser () {
 		return				propertyContainer.getProperty(JDBC_USER);
+	}
+	public boolean isJavaFx () {
+		String	getString	= propertyContainer.getProperty(IS_JAVAFX);
+		if 	(getString==null)
+			return false;
+		return  getString.matches("[JjYy].*");
 	}
 	public String getJdbcPw () {
 		String pw			= propertyContainer.getProperty(JDBC_PW);

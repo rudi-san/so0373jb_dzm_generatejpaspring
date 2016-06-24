@@ -16,6 +16,7 @@ public class Method {
 	private Visibility				visibility;
 	private String					type;
 	private boolean					isStatic	= false;
+	private boolean					isFinal		= false;
 	private boolean					isComment	= false;
 	private ArrayList<String>		annotList	= new ArrayList<String>();
 	private ArrayList<Parameter> 	paraList	= new ArrayList<Parameter>();
@@ -39,6 +40,10 @@ public class Method {
 	
 	public void setStatic () {
 		isStatic		= true;
+	}
+	
+	public void setFinal () {
+		isFinal			= true;
 	}
 	
 	public void setComment () {
@@ -97,7 +102,8 @@ public class Method {
 		for (String annot : annotList )
 			buf.append				("\t"+annot+NEWLINE);
 		String staticKenn		= (isStatic) ? " static " : " ";
-		buf.append				("\t"+visibility+staticKenn+type+" "+methodName+" (");
+		String finalKenn		= (isFinal) ? " final " : " ";
+		buf.append				("\t"+visibility+staticKenn+finalKenn+type+" "+methodName+" (");
 		buf.append				(Parameter.toList(paraList)+") ");
 		if  (throwList.size()>0)
 			buf.append				("throws ");
