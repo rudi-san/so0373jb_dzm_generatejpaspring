@@ -21,81 +21,34 @@ public class FXClazz extends Clazz {
 
 	private static Logger logger		= LoggingContainer.getLoggerInstance().getRootLogger();
 
+	/**
+	 * @param table
+	 */
 	public FXClazz (Db2Table table) {
 		super					( Configuration.getConfiguration().getPackage()+".jpa"
 								, table.getCcName()
-								, Visibility.visibility_public
-								, "javax.persistence.*"
-								, "java.io.Serializable");
+								, Visibility.visibility_public);
+		
 		logger.info				("Start der Verarbeitung der Tabelle "+table.getOrigName());
-		if (table.getFkChild().length>0) {
-			addImport				("java.util.List");			
-			addImport				("java.util.ArrayList");			
-		}
-		boolean containsString		= false;
-		boolean containsInteger		= false;
-		boolean containsLong		= false;
-		boolean containsDouble		= false;
-		boolean containsDec			= false;
-		boolean containsDate		= false;
-		boolean containsTime		= false;		
-		boolean containsTimestamp	= false;
-		for (Db2Column c : table.getColumns()) {
-			if (c.getColtype()==DB2Type.db2type_bigint)			containsLong		= true;
-			if (c.getColtype()==DB2Type.db2type_char)			containsString		= true;
-			if (c.getColtype()==DB2Type.db2type_date)       	containsDate		= true;
-			if (c.getColtype()==DB2Type.db2type_decimal)		containsDec			= true;
-			if (c.getColtype()==DB2Type.db2type_double)			containsDouble		= true;
-			if (c.getColtype()==DB2Type.db2type_float)			containsDouble		= true;
-			if (c.getColtype()==DB2Type.db2type_integer)		containsInteger		= true;
-			if (c.getColtype()==DB2Type.db2type_smallint)		containsInteger		= true;
-			if (c.getColtype()==DB2Type.db2type_time)			containsTime		= true;
-			if (c.getColtype()==DB2Type.db2type_timestmp)		containsTimestamp	= true;
-			if (c.getColtype()==DB2Type.db2type_varchar)		containsString		= true;
-		}
-		for (Db2Column c : table.getPk()) {
-			if (c.getColtype()==DB2Type.db2type_date)         	containsDate		= true;
-			if (c.getColtype()==DB2Type.db2type_time)			containsTime		= true;
-			if (c.getColtype()==DB2Type.db2type_timestmp)		containsTimestamp	= true;
-		}
-		if  (containsDate||containsTime||containsTimestamp||containsString) {
-			addImport				("javafx.beans.property.StringProperty");
-			addImport				("javafx.beans.property.SimpleStringProperty");
-		}
-		if  (containsInteger) {
-			addImport				("javafx.beans.property.IntegerProperty");
-			addImport				("javafx.beans.property.SimpleIntegerProperty");
-		}
-		if  (containsLong) {
-			addImport				("javafx.beans.property.LongProperty");
-			addImport				("javafx.beans.property.SimpleLongProperty");
-		}
-		if  (containsDouble) {
-			addImport				("javafx.beans.property.DoubleProperty");
-			addImport				("javafx.beans.property.SimpleDoubleProperty");
-		}
-		if (containsDec)			addImport				("java.math.BigDecimal");
-		if (containsDate) {
-			addImport				("java.util.Date");
-			addImport				("java.text.DateFormat");
-			addImport				("java.text.ParseException");
-		}
-		if (containsTime)			addImport				("java.sql.Time");
-		if (containsTimestamp)		addImport				("java.sql.Timestamp");
+		
+		addImports				(this, table);
 
-//		Annotations
-		addAnnot				( "@Entity", "@Table(name=\""+table.getOrigName()+"\")");
 //		CamelCase Name
 		String ccName			= table.getCcName();
 
+//		JPA-Annotations
+		addAnnot				( "@Entity", "@Table(name=\""+table.getOrigName()+"\")");
+
 //		Interfaces
-		addInterface			( "Serializable" ); // , "Comparable<"+ccName+">");
+		addInterface			( "Serializable" );  
+		
 //		Variable      serialVersionUID
 		Variable variable		= new Variable("serialVersionUID", Visibility.visibility_private, "long", "1L");
 		variable.setFinalStatic	();
 		addVariable				(variable);
 
-		for (Db2Column col : table.getColumns()) {
+//		Klarschrift der columns (nur convenience, für JPA oder Spring nicht erforderlich)
+		for (Db2Column col : table.getColumnsOhneParent()) {
 			Variable var			= new Variable(col.getVarName().toUpperCase()
 									, Visibility.visibility_public, "String", "\""+col.getVarName()+"\"");
 			var.setFinalStatic		();
@@ -114,7 +67,7 @@ public class FXClazz extends Clazz {
 			else
 				complConstructor.addSkeleton("SKEL002", pk[0].getVarName());
 		}
-		for (Db2Column col : table.getColumns()) {	
+		for (Db2Column col : table.getColumnsOhneParent()) {	
 			String varName2					= col.getVarName();
 			String varName1                 = varName2.substring(0, 1).toUpperCase()+varName2.substring(1);
 			complConstructor.addSkeleton("SKEL101", varName1, varName2);
@@ -126,12 +79,14 @@ public class FXClazz extends Clazz {
 			}
 		}
 		addMethod				(complConstructor);
-
+//      Ende Komplett-Konstruktor
+		
 //		PK einfügen
 		Db2Column[] pkCol		= table.getPk();
 		String pkName			= "";
 		String pkVarName		= "";	
 		if  (pkCol.length>0) {
+//		Wenn der PK mehr als ein Attribut umfasst, muss eine zusätzliche Klasse "<Tablename>Pk" gebildet werden
 			if  (pkCol.length>1) {
 				pkName					= ccName+"Pk";
 				table.setPkType			(pkName);
@@ -153,8 +108,10 @@ public class FXClazz extends Clazz {
 			var.setFinalStatic		();
 			addVariable				(var);
 		}
+
+
 //      Columns hinzufügen		
-		for (Db2Column col : table.getColumns()) {
+		for (Db2Column col : table.getColumnsOhneParent()) {
 			addVariable				(col, this, false);
 			Method propertyGet		= new Method(col.getVarName()+"Property", col.getColtype().getJavaFxString());
 			propertyGet.addSkeleton	("SKEL001", col.getVarName());
@@ -162,39 +119,54 @@ public class FXClazz extends Clazz {
 		}
 //		die Parent-Verbindungen hinzufügen
 		for (Db2Parent parent : table.getParent()) {
-			boolean doubleParent = table.isDoubleParent(parent);
-			String type			= parent.getCcName();
-			String paName		= (doubleParent) ? parent.getRelname() : type;
-			paName				= Db2Table.makeLowerCamelCase(paName);
-			Variable paVar		= new Variable	( paName
-												, Visibility.visibility_private
-												, type
-												, null);
-			paVar.addAnnot		("@ManyToOne");
-			paVar.addAnnot		("@JoinColumns({");
-			boolean start		= true;
+			boolean doubleParent 	= table.isDoubleParent(parent);
+			String type				= parent.getCcName();
+			String paName			= (doubleParent) ? parent.getRelname() : type;
+			paName					= Db2Table.makeLowerCamelCase(paName);
+			Variable paVar			= new Variable	( paName
+													, Visibility.visibility_private
+													, type
+													, null);
+//			paVar.setComment		(parent.isComment());
+			addVariable				(paVar);
+			
+			Method getMethod		= new Method	( "get"+Db2Table.upperCaseStart(paName), type);
+			getMethod.addAnnot		("@ManyToOne");
+			getMethod.addAnnot		("@JoinColumns({");
+			boolean start			= true;
 			for (String[] col : parent.getColumns()) {
-				String annot		=   "@JoinColumn(name=\""		+
-										col[0]						+
-										"\", referencedColumnName=\"" +
-										col[1]						+
-										"\"";
+				String annot			=   "@JoinColumn(name=\""		+
+											col[0]						+
+											"\", referencedColumnName=\"" +
+											col[1]						+
+											"\"";
 				if (table.isPk(col[0]))
-					annot				= annot+", insertable=false, updatable=false)";
+					annot					= annot+", insertable=false, updatable=false)";
 				else
-					annot				= annot+")";
+					annot					= annot+")";
 				if (start) {
-					start				= false;
-					paVar.addAnnot		("\t "+annot);
+					start					= false;
+					getMethod.addAnnot		("\t "+annot);
 				}
 				else
-					paVar.addAnnot		("\t,"+annot);
+					getMethod.addAnnot		("\t,"+annot);
 			}
-			paVar.addAnnot("\t})");
-			paVar.setComment	(parent.isComment());
-			addVariable			(paVar);
-			createGetAndSet		(null, false, type, paName, this, parent.isComment());
+			getMethod.addAnnot		("\t})");
+			getMethod.addSkeleton	("SKEL001", "this."+paName);
+			getMethod.setComment	(parent.isComment());
+			addMethod				(getMethod);
+			
+			Method setMethod		= new Method	( "set"+Db2Table.upperCaseStart(paName)
+													, "void"
+													, new Parameter(paName, type)
+													);
+			setMethod.addSkeleton	("SKEL002", paName);
+			setMethod.setComment	(parent.isComment());
+			addMethod				(setMethod);
+
+//			createGetAndSet			(null, false, type, paName, this, parent.isComment());
 		}
+		
 //		die Lists für die Childs hinzufügen
 		for (Db2Child fkChild :  table.getFkChild()) {
 			boolean doubleChild 	= table.isDoubleChild(fkChild);
@@ -206,12 +178,20 @@ public class FXClazz extends Clazz {
 													, Visibility.visibility_private
 													, type
 													, null);
-			String mapName			= (doubleChild) ? chName1 : table.getVarName();
-			fkVar.addAnnot			("@OneToMany(mappedBy=\""+mapName+"\")");
 			boolean comment			= !Main.tableExists(fkChild.getTable());
 			fkVar.setComment		(comment);
 			addVariable				(fkVar);
-			createGetAndSet			(null, false, type, chName2, this, comment);
+			Method getMethod		= new Method	( "get"+Db2Table.upperCaseStart(chName2), type);
+			String mapName			= (doubleChild) ? chName1 : table.getVarName();
+			getMethod.addAnnot		("@OneToMany(mappedBy=\""+mapName+"\")");
+			getMethod.addSkeleton	("SKEL001", "this."+chName2);
+			getMethod.setComment	(comment);
+			addMethod				(getMethod);
+			Method setMethod		= new Method("set"+Db2Table.upperCaseStart(chName2), "void", new Parameter(chName2, type));
+			setMethod.addSkeleton	("SKEL002", chName2);
+			setMethod.setComment	(comment);
+			addMethod				(setMethod);
+//			createGetAndSet			(null, false, type, chName2, this, comment);
 			if  (comment)
 				complConstructor.addSkeleton	("SKEL003", "//", chName2, fkTable);				
 			else
@@ -270,11 +250,73 @@ public class FXClazz extends Clazz {
 			toStringMethod.addSkeleton	("SKEL006", ccName+"Pk", "id");
 		else
 			toStringMethod.addSkeleton	("SKEL006", pk[0].getName(), pk[0].getVarName());
-		for (Db2Column col : table.getColumns())	
+		for (Db2Column col : table.getColumnsOhneParent())	
 			toStringMethod.addSkeleton("SKEL006", col.getName(), "get"+col.getCamelCase()+"()");
 		toStringMethod.addSkeleton	("SKEL007");
 		addMethod					(toStringMethod);
 
+	}
+
+	private static void addImports  (Clazz clazz, Db2Table table) {
+		clazz.addImport				( "javax.persistence.*"
+									, "java.io.Serializable");
+		if (table.getFkChild().length>0) {
+			clazz.addImport				( "java.util.List"
+					     				, "java.util.ArrayList");			
+		}
+		boolean containsString		= false;
+		boolean containsInteger		= false;
+		boolean containsLong		= false;
+		boolean containsDouble		= false;
+		boolean containsDec			= false;
+		boolean containsDate		= false;
+		boolean containsTime		= false;		
+		boolean containsTimestamp	= false;
+		for (Db2Column c : table.getColumnsOhneParent()) {
+			if (c.getColtype()==DB2Type.db2type_bigint)			containsLong		= true;
+			if (c.getColtype()==DB2Type.db2type_char)			containsString		= true;
+			if (c.getColtype()==DB2Type.db2type_date)       	containsDate		= true;
+			if (c.getColtype()==DB2Type.db2type_decimal)		containsDec			= true;
+			if (c.getColtype()==DB2Type.db2type_double)			containsDouble		= true;
+			if (c.getColtype()==DB2Type.db2type_float)			containsDouble		= true;
+			if (c.getColtype()==DB2Type.db2type_integer)		containsInteger		= true;
+			if (c.getColtype()==DB2Type.db2type_smallint)		containsInteger		= true;
+			if (c.getColtype()==DB2Type.db2type_time)			containsTime		= true;
+			if (c.getColtype()==DB2Type.db2type_timestmp)		containsTimestamp	= true;
+			if (c.getColtype()==DB2Type.db2type_varchar)		containsString		= true;
+		}
+		for (Db2Column c : table.getPk()) {
+			if (c.getColtype()==DB2Type.db2type_date)         	containsDate		= true;
+			if (c.getColtype()==DB2Type.db2type_time)			containsTime		= true;
+			if (c.getColtype()==DB2Type.db2type_timestmp)		containsTimestamp	= true;
+		}
+		if  (containsDate||containsTime||containsTimestamp||containsString) {
+			clazz.addImport				( "javafx.beans.property.StringProperty"
+										, "javafx.beans.property.SimpleStringProperty");
+		}
+		if  (containsInteger) {
+			clazz.addImport				( "javafx.beans.property.IntegerProperty"
+										, "javafx.beans.property.SimpleIntegerProperty");
+		}
+		if  (containsLong) {
+			clazz.addImport				( "javafx.beans.property.LongProperty"
+										, "javafx.beans.property.SimpleLongProperty");
+		}
+		if  (containsDouble) {
+			clazz.addImport				( "javafx.beans.property.DoubleProperty"
+					   					, "javafx.beans.property.SimpleDoubleProperty");
+		}
+		if (containsDec)			
+			clazz.addImport				( "java.math.BigDecimal");
+		if (containsDate) {
+			clazz.addImport				( "java.util.Date"
+										, "java.text.DateFormat"
+										, "java.text.ParseException");
+		}
+		if (containsTime)			
+			clazz.addImport				( "java.sql.Time");
+		if (containsTimestamp)		
+			clazz.addImport				( "java.sql.Timestamp");
 	}
 	
 	private String addPkClass	(String className, Db2Column[] columns) {

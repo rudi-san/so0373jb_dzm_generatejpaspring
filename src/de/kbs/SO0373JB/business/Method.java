@@ -131,4 +131,9 @@ public class Method {
 		m.addSkeleton	("SKEL001", "TESTVARIABLE");
 		System.out.println(m);
 	}
+
+	public void setComment	(boolean comment) {
+		this.isComment			= comment;
+		
+	}
 }

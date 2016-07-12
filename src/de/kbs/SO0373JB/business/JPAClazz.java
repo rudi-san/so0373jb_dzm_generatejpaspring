@@ -35,7 +35,7 @@ public class JPAClazz extends Clazz {
 		boolean containsDate		= false;
 		boolean containsTime		= false;		
 		boolean containsTimestamp	= false;
-		for (Db2Column c : table.getColumns()) {
+		for (Db2Column c : table.getColumnsOhneParent()) {
 			if (c.getColtype().name().equals("db2type_decimal"))		containsDec			= true;
 			if (c.getColtype().name().equals("db2type_date"))			containsDate		= true;
 			if (c.getColtype().name().equals("db2type_time"))			containsTime		= true;
@@ -64,7 +64,7 @@ public class JPAClazz extends Clazz {
 		variable.setFinalStatic	();
 		addVariable				(variable);
 
-		for (Db2Column col : table.getColumns()) {
+		for (Db2Column col : table.getColumnsOhneParent()) {
 			Variable var			= new Variable(col.getVarName().toUpperCase()
 									, Visibility.visibility_public, "String", "\""+col.getVarName()+"\"");
 			var.setFinalStatic		();
@@ -92,7 +92,7 @@ public class JPAClazz extends Clazz {
 			else
 				complConstructor.addSkeleton("SKEL002", pk[0].getVarName());
 		}
-		for (Db2Column col : table.getColumns())	
+		for (Db2Column col : table.getColumnsOhneParent())	
 			complConstructor.addSkeleton("SKEL002", col.getVarName());
 		for (Db2Parent parent : table.getParent())	{
 			if (!parent.isComment()) {
@@ -129,7 +129,7 @@ public class JPAClazz extends Clazz {
 			addVariable				(var);
 		}
 //      Columns hinzufügen		
-		for (Db2Column col : table.getColumns()) 
+		for (Db2Column col : table.getColumnsOhneParent()) 
 			addVariable				(col, this, false);
 //		die Parent-Verbindungen hinzufügen
 		for (Db2Parent parent : table.getParent()) {
@@ -241,7 +241,7 @@ public class JPAClazz extends Clazz {
 			toStringMethod.addSkeleton	("SKEL006", ccName+"Pk", "id");
 		else
 			toStringMethod.addSkeleton	("SKEL006", pk[0].getName(), pk[0].getVarName());
-		for (Db2Column col : table.getColumns())	
+		for (Db2Column col : table.getColumnsOhneParent())	
 			toStringMethod.addSkeleton("SKEL006", col.getName(), col.getVarName());
 		toStringMethod.addSkeleton	("SKEL007");
 		addMethod					(toStringMethod);
@@ -506,7 +506,7 @@ public class JPAClazz extends Clazz {
 		Method getMethod		= new Method	( "get"+Db2Table.upperCaseStart(varName)
 												, type
 												);
-		getMethod.addSkeleton	("SKEL001", "this"+varName);
+		getMethod.addSkeleton	("SKEL001", "this."+varName);
 		if (isComment) 			getMethod.setComment();
 		clazz.addMethod			(getMethod);
 		Method setMethod		= new Method	( "set"+Db2Table.upperCaseStart(varName)

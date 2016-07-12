@@ -9,8 +9,8 @@ import de.kbs.SO0373JB.business.Parameter;
 import de.kbs.SO0373JB.common.enums.DB2Type;
 import de.kbs.SO0373JB.dao.SysColumns;
 import de.kbs.SO0373JB.dao.SysForeignkeys;
-import de.kbs.SO0373JB.dao.SysIndexes;
-import de.kbs.SO0373JB.dao.SysKeys;
+//import de.kbs.SO0373JB.dao.SysIndexes;
+//import de.kbs.SO0373JB.dao.SysKeys;
 import de.kbs.SO0373JB.dao.SysRels;
 import de.kbs.so1320jc.main.LoggingContainer;
 
@@ -25,7 +25,7 @@ public class Db2Table {
 	private ArrayList<Db2Column> 			pkList			= new ArrayList<Db2Column>();
 	private ArrayList<Db2Child>				fkChild			= new ArrayList<Db2Child>();
 	private ArrayList<Db2Parent>			parentList		= new ArrayList<Db2Parent>();
-	private ArrayList<Db2Index> 			indexList		= new ArrayList<Db2Index>();
+//	private ArrayList<Db2Index> 			indexList		= new ArrayList<Db2Index>();
 	private Hashtable<String, Db2Column>	colHash			= new Hashtable<String, Db2Column>();
 	private static Logger logger		= LoggingContainer.getLoggerInstance().getRootLogger();
 	
@@ -35,13 +35,20 @@ public class Db2Table {
 		this.varName		= makeLowerCamelCase(name);
 	}					
 
+	
+	/** Lesen der Systemtabellen für die Generierung
+	 * @param creator
+	 * @param tbname
+	 * @return
+	 */
 	public static Db2Table createTable (String creator, String tbname)  {
 		
 		creator						= creator.toUpperCase();
 		tbname						= tbname.toUpperCase();
-//		String tbna					= tbname.substring(0,1)+tbname.substring(1).toLowerCase();
 
 		Db2Table table				= new Db2Table(tbname);
+		
+//		Lesen der SYSCOLUMNS, um die Attribute der Tabelle zu ermitteln
 		ArrayList<SysColumns> list01= SysColumns.read(creator, tbname);	
 		logger.info					("Anzahl Columns : " + list01.size());
 		for (SysColumns col : list01) {
@@ -53,14 +60,17 @@ public class Db2Table {
 														, col.getNulls()
 														, col.getDefault()
 														, col.getKeyseq());
+//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
 			if  (col.getKeyseq()>0) 
 				table.addPk					(column);
 			else
+//				alle anderen Felder laufen in die columnList
 				table.addColumn				(column);
 			if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
 				table.setGeneratedKey		(true);
 		}
 
+//		die Parent-Verbindungen werden in der parentList abgelegt
 		ArrayList<SysRels> list02	= SysRels.readParent(creator, tbname);
 		logger.info					("Anzahl parents : " + list02.size());
 		for (SysRels rel : list02) {
@@ -86,18 +96,18 @@ public class Db2Table {
 			table.addFkChild				(child);
 		}
 
-		ArrayList<SysIndexes> list06	= SysIndexes.read(creator, tbname);	
-		logger.info						("Anzahl Index : " + list06.size());
-		for (SysIndexes index : list06) {
-			String indexName				= index.getName();
-			String indexCreator				= index.getCreator();
-			String uniqueRule				= index.getUniquerule();
-			Db2Index db2Index				= new Db2Index(indexName, uniqueRule);
-			ArrayList<SysKeys> list07		= SysKeys.read(indexCreator, indexName);	
-			for (SysKeys keys : list07) 
-				db2Index.addColumn 				(keys.getColname());
-			table.addIndex					(db2Index);
-		}
+//		ArrayList<SysIndexes> list06	= SysIndexes.read(creator, tbname);	
+//		logger.info						("Anzahl Index : " + list06.size());
+//		for (SysIndexes index : list06) {
+//			String indexName				= index.getName();
+//			String indexCreator				= index.getCreator();
+//			String uniqueRule				= index.getUniquerule();
+//			Db2Index db2Index				= new Db2Index(indexName, uniqueRule);
+//			ArrayList<SysKeys> list07		= SysKeys.read(indexCreator, indexName);	
+//			for (SysKeys keys : list07) 
+//				db2Index.addColumn 				(keys.getColname());
+//			table.addIndex					(db2Index);
+//		}
 		
 		return 						table;
 	}
@@ -162,9 +172,9 @@ public class Db2Table {
 		
 	}
 	
-	public void addIndex	(Db2Index index) {
-		indexList.add		(index);
-	}
+//	public void addIndex	(Db2Index index) {
+//		indexList.add		(index);
+//	}
 	
 	public String getOrigName	() {
 		return origName;
@@ -178,7 +188,7 @@ public class Db2Table {
 		return varName;
 	}
 	
-	public Db2Column[] getColumns () {
+	public Db2Column[] getColumnsOhneParent () {
 		ArrayList<Db2Column> list = new ArrayList<Db2Column>();
 		for (Db2Column col : columnList) {
 			if (!isParent(col.getName())) 
@@ -197,7 +207,7 @@ public class Db2Table {
 			else
 				para.add			(new Parameter(pk[0].getVarName(), pk[0].getColtype().getJavaString()));
 		}
-		for (Db2Column col : getColumns()) 
+		for (Db2Column col : getColumnsOhneParent()) 
 			para.add			(new Parameter(col.getVarName(), col.getColtype().getJavaString()));
 		for (Db2Parent parent : parentList) {
 			if (!parent.isComment()) {
@@ -231,11 +241,6 @@ public class Db2Table {
 	public Db2Parent[] getParent () {
 		Db2Parent[] parent		= new Db2Parent[parentList.size()];
 		return					parentList.toArray(parent);
-	}
-	
-	public Db2Index[] getIndex () {
-		Db2Index[] index		= new Db2Index[indexList.size()];
-		return					indexList.toArray(index);
 	}
 	
 	public boolean isGeneratedKey() {

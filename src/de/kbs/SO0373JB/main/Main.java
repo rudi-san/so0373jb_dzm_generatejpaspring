@@ -5,8 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 //import java.util.Properties;
 
-
-
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
