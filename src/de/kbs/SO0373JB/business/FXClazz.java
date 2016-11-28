@@ -461,7 +461,7 @@ public class FXClazz extends Clazz {
 		else
 			getMethod.addSkeleton	("SKEL001", "this."+varName+".get()");
 		
-		getMethod.setFinal		();
+//		getMethod.setFinal		();
 		if (isComment) 			getMethod.setComment();
 		clazz.addMethod			(getMethod);
 		
@@ -482,7 +482,7 @@ public class FXClazz extends Clazz {
 		else
 			setMethod.addSkeleton	("SKEL102", varName, varName);
 		
-		setMethod.setFinal		();
+//		setMethod.setFinal		();
 		if (isComment) 			setMethod.setComment();
 		clazz.addMethod			(setMethod);
 	}

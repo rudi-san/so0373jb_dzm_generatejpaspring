@@ -16,7 +16,7 @@ import de.kbs.SO0373JB.business.SpringRepository;
 import de.kbs.SO0373JB.common.config.Configuration;
 import de.kbs.SO0373JB.db2.Db2Table;
 //import de.kbs.SO0373JB.xml.BuildXML;
-import de.kbs.SO0373JB.xml.IvyXML;
+//import de.kbs.SO0373JB.xml.IvyXML;
 
 public class Main {
 	
@@ -59,14 +59,14 @@ public class Main {
  		JOptionPane.showMessageDialog
  								(null, message);
 
- 		IvyXML.createIvyXml		(configuration.getProjectPath()+"\\ivy.xml");
+// 		IvyXML.createIvyXml		(configuration.getProjectPath()+"\\ivy.xml");
 //		IvyXML.createIvySettings(configuration.getProjectPath()+"\\ivyjpasettings.xml");
 //		BuildXML.createBuildXml	(configuration.getProjectPath()+"\\build.xml", configuration.getPackage());
 //		writeBuildProperties	();
 		
-		JOptionPane.showMessageDialog
-								(null, "<html>Konfigurationsdateien wurden erstellt<br><br>"
-								+ "<i>ivy.xml</html>");
+//		JOptionPane.showMessageDialog
+//								(null, "<html>Konfigurationsdateien wurden erstellt<br><br>"
+//								+ "<i>ivy.xml</html>");
 	}
 	
 	public static boolean tableExists (String tbna) {

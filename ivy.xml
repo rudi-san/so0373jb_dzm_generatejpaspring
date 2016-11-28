@@ -8,7 +8,7 @@
 	<dependencies>
 		<dependency org="com.ibm.db2_adapter" 		name="db2jcc4" 	rev="4.19.26"/> 
 		<dependency org="de.kbs.kbspropertyhandler" name="SO0003JC"	rev="1.1.0"/>
-		<dependency org="de.kbs.pwcrypt"		 	name="SO1300JC"	rev="latest.integration"/>
-		<dependency org="de.kbs.kbsloghandler" 		name="SO1320JC"	rev="latest.integration"/>
+		<dependency org="de.kbs.pwcrypt"		 	name="SO1300JC"	rev="1.1.0"/>
+		<dependency org="de.kbs.kbsloghandler" 		name="SO1320JC"	rev="1.3.0"/>
  	</dependencies>
 </ivy-module>
