@@ -55,22 +55,25 @@ public class Db2Table {
 		ArrayList<SysColumns> list01= SysColumns.read(creator, tbname);	
 		logger.info					("Anzahl Columns : " + list01.size());
 		for (SysColumns col : list01) {
-			Db2Column column			= new Db2Column	( col.getName()
-														, col.getColno()
-														, DB2Type.findType(col.getColtype())
-														, col.getLength()
-														, col.getScale()
-														, col.getNulls()
-														, col.getDefault()
-														, col.getKeyseq());
-//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
-			if  (col.getKeyseq()>0) 
-				table.addPk					(column);
-			else
-//				alle anderen Felder laufen in die columnList
-				table.addColumn				(column);
-			if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
-				table.setGeneratedKey		(true);
+			DB2Type type				= DB2Type.findType(col.getColtype());
+			if (type!=null) {
+				Db2Column column			= new Db2Column	( col.getName()
+															, col.getColno()
+															, type
+															, col.getLength()
+															, col.getScale()
+															, col.getNulls()
+															, col.getDefault()
+															, col.getKeyseq());
+	//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
+				if  (col.getKeyseq()>0) 
+					table.addPk					(column);
+				else
+	//				alle anderen Felder laufen in die columnList
+					table.addColumn				(column);
+				if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
+					table.setGeneratedKey		(true);
+			}
 		}
 
 //		die Parent-Verbindungen werden in der parentList abgelegt

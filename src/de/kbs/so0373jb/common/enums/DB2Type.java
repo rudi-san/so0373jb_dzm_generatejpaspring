@@ -15,7 +15,7 @@ public enum DB2Type {
 			if (search.equalsIgnoreCase(db2[i]))
 				return DB2Type.values()[i];
 		}
-		System.out.println(search);
+//		System.out.println(search);
 		return null;
 	}
 	

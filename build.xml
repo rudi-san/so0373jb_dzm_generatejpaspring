@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="${module.name}" default="jarBuilder" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
-	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" />
+<!--	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" />  -->
     <property file="build.properties" />
 	<target name="jarBuilder" description="Kreieren eines JAR Archives (${projname})">
-		<delete dir="lib"/>
-		<ivy:settings file="${settings.file}" />   
-		<ivy:retrieve pathid="lib"/>
 		<jar jarfile="${module.name}.jar"  basedir="bin">
  			<include name="de/kbs/${module.name}/**/*.class"/> 
  		   	<manifest>
@@ -17,6 +14,10 @@
 		</jar>
 		<move file="${module.name}.jar" 
 			  todir="S:/Java/JPAGenerator" />
+		<delete dir="lib"/>
+<!--		<ivy:settings file="${settings.file}" /> -->   
+		<ivy:retrieve pathid="lib"/>
+		<delete dir="S:/Java/JPAGenerator/lib"/>
 		<move todir="S:/Java/JPAGenerator/lib">
 				<fileset dir="lib" />
 		</move>	
