@@ -4,12 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 //import java.util.Properties;
-
-
-
-
-
-
+import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
@@ -35,12 +30,16 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		doGener				("resources/config/SO0373JB/SO0373JB.xml");
+		try {
+			doGener				("resources/config/so9900.xml");
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "JPA-Gener", JOptionPane.ERROR_MESSAGE);
+		}
 		
 	}
 
 	
-	public static void doGener (String config) {
+	public static void doGener (String config) throws SQLException {
 
 		configuration			= Configuration.getConfiguration(config);
 		logger					= configuration.getRootLogger();

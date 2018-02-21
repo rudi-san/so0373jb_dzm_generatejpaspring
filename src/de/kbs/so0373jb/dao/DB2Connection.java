@@ -3,6 +3,7 @@ package de.kbs.so0373jb.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.kbs.so0373jb.common.config.Configuration;
@@ -37,5 +38,16 @@ public class DB2Connection {
 			if (connection==null)
 				connection			= new DB2Connection();
 			return					con.prepareStatement(sql);
+	}
+	
+	public static boolean existsTable (String creator, String name) throws SQLException {
+			PreparedStatement stmt 			= getStatement("select NAME from SYSIBM.SYSTABLES where CREATOR = ? and NAME = ?");
+			stmt.setString					(1, creator);
+			stmt.setString					(2, name);
+			ResultSet rs					= stmt.executeQuery();
+			if (rs.next())
+				return true;
+			else
+				return false;
 	}
 }

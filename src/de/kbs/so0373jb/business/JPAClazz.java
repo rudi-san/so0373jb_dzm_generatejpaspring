@@ -3,6 +3,7 @@ package de.kbs.so0373jb.business;
 import org.apache.log4j.Logger;
 
 import de.kbs.so0373jb.common.config.Configuration;
+import de.kbs.so0373jb.common.enums.DB2Type;
 import de.kbs.so0373jb.common.enums.Visibility;
 import de.kbs.so0373jb.db2.Db2Child;
 import de.kbs.so0373jb.db2.Db2Column;
@@ -493,7 +494,7 @@ public class JPAClazz extends Clazz {
 		if (type.equalsIgnoreCase("Date"))
 			var.addAnnot("@Temporal( TemporalType.DATE)");
 //		Annotations - Column
-		if (type.equalsIgnoreCase("String"))
+		if (type.equalsIgnoreCase("String") && !col.getColtype().equals(DB2Type.db2type_xml))
 			var.addAnnot			("@Column(name=\""+name+"\",columnDefinition=\"char["+col.getLength()+"]\")");
 		else
 			var.addAnnot			("@Column(name=\""+name+"\")");

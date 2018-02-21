@@ -3,11 +3,11 @@ package de.kbs.so0373jb.common.enums;
 public enum DB2Type {
 
 	db2type_date, 		db2type_time, 		db2type_timestmp, 	db2type_smallint,	db2type_integer, 
-	db2type_bigint, 	db2type_float, 		db2type_double,     db2type_decimal, 	db2type_char,		db2type_varchar;
+	db2type_bigint, 	db2type_float, 		db2type_double,     db2type_decimal, 	db2type_char,		db2type_varchar, db2type_xml;
 	
-	private static String[] db2 = 	{ "DATE", "TIME", "TIMESTMP",  "SMALLINT", "INTEGER", "BIGINT", "FLOAT",  "DOUBLE", "DECIMAL",    "CHAR",   "VARCHAR" };
-	private static String[] java = 	{ "Date", "Time", "Timestamp", "Short",    "Integer", "Long",   "Double", "Double", "BigDecimal", "String", "String" };
-	private static String[] fx = 	{ "StringProperty", "StringProperty", "StringProperty", "IntegerProperty",    "IntegerProperty", "LongProperty",   "DoubleProperty", "DoubleProperty", "StringProperty", "StringProperty", "StringProperty" };
+	private static String[] db2 = 	{ "DATE", "TIME", "TIMESTMP",  "SMALLINT", "INTEGER", "BIGINT", "FLOAT",  "DOUBLE", "DECIMAL",    "CHAR",   "VARCHAR", "XML" };
+	private static String[] java = 	{ "Date", "Time", "Timestamp", "Short",    "Integer", "Long",   "Double", "Double", "BigDecimal", "String", "String", "String" };
+	private static String[] fx = 	{ "StringProperty", "StringProperty", "StringProperty", "IntegerProperty",    "IntegerProperty", "LongProperty",   "DoubleProperty", "DoubleProperty", "StringProperty", "StringProperty", "StringProperty", "StringProperty" };
 	
 	public static DB2Type findType (String search) {
 		search			= search.trim();

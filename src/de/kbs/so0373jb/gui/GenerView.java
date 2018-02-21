@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
@@ -87,7 +89,11 @@ public class GenerView extends JFrame {
 			private static final long serialVersionUID = 1L;			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Main.doGener(control.getInput());
+				try {
+					Main.doGener(control.getInput());
+				} catch (SQLException exc) {
+					JOptionPane.showMessageDialog(null, exc.getMessage(), "JPA-Gener", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}));
 		

@@ -1,7 +1,11 @@
 package de.kbs.so0373jb.db2;
 
+import java.awt.HeadlessException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
@@ -11,7 +15,9 @@ import org.apache.log4j.Logger;
 
 
 import de.kbs.so0373jb.business.Parameter;
+import de.kbs.so0373jb.common.constants.Constants;
 import de.kbs.so0373jb.common.enums.DB2Type;
+import de.kbs.so0373jb.dao.DB2Connection;
 import de.kbs.so0373jb.dao.SysColumns;
 import de.kbs.so0373jb.dao.SysForeignkeys;
 import de.kbs.so0373jb.dao.SysRels;
@@ -43,11 +49,18 @@ public class Db2Table {
 	 * @param creator
 	 * @param tbname
 	 * @return
+	 * @throws SQLException 
+	 * @throws HeadlessException 
 	 */
-	public static Db2Table createTable (String creator, String tbname)  {
+	public static Db2Table createTable (String creator, String tbname) throws HeadlessException, SQLException  {
 		
 		creator						= creator.toUpperCase();
 		tbname						= tbname.toUpperCase();
+		
+		if (!DB2Connection.existsTable(creator, tbname)) {
+			JOptionPane.showMessageDialog	(null, "Tabelle \""+creator+"."+tbname+"\" existiert nicht");
+			System.exit(0);
+		}
 
 		Db2Table table				= new Db2Table(tbname);
 		
@@ -55,24 +68,26 @@ public class Db2Table {
 		ArrayList<SysColumns> list01= SysColumns.read(creator, tbname);	
 		logger.info					("Anzahl Columns : " + list01.size());
 		for (SysColumns col : list01) {
-			DB2Type type				= DB2Type.findType(col.getColtype());
-			if (type!=null) {
-				Db2Column column			= new Db2Column	( col.getName()
-															, col.getColno()
-															, type
-															, col.getLength()
-															, col.getScale()
-															, col.getNulls()
-															, col.getDefault()
-															, col.getKeyseq());
-	//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
-				if  (col.getKeyseq()>0) 
-					table.addPk					(column);
-				else
-	//				alle anderen Felder laufen in die columnList
-					table.addColumn				(column);
-				if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
-					table.setGeneratedKey		(true);
+			if (!col.getName().startsWith(Constants.DB2_GENER)) {
+				DB2Type type				= DB2Type.findType(col.getColtype());
+				if (type!=null) {
+					Db2Column column			= new Db2Column	( col.getName()
+																, col.getColno()
+																, type
+																, col.getLength()
+																, col.getScale()
+																, col.getNulls()
+																, col.getDefault()
+																, col.getKeyseq());
+		//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
+					if  (col.getKeyseq()>0) 
+						table.addPk					(column);
+					else
+		//				alle anderen Felder laufen in die columnList
+						table.addColumn				(column);
+					if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
+						table.setGeneratedKey		(true);
+				}
 			}
 		}
 
