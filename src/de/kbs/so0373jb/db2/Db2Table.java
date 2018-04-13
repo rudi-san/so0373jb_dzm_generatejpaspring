@@ -75,6 +75,7 @@ public class Db2Table {
 																, col.getColno()
 																, type
 																, col.getLength()
+																, col.getLength2()
 																, col.getScale()
 																, col.getNulls()
 																, col.getDefault()

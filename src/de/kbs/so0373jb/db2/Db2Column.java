@@ -8,6 +8,7 @@ public class Db2Column {
 	private int colno;
 	private DB2Type coltype;
 	private int length;
+	private int length2;
 	private int scale;
 	private String nulls;
 	private String deflt;
@@ -16,11 +17,12 @@ public class Db2Column {
 	private String varName;
 	private boolean isPk	= false;
 	
-	public Db2Column (String name, int colno, DB2Type coltype, int length, int scale, String nulls, String deflt, int keyseq ) {
+	public Db2Column (String name, int colno, DB2Type coltype, int length, int length2, int scale, String nulls, String deflt, int keyseq ) {
 		this.name			= name;
 		this.colno			= colno;
 		this.coltype		= coltype;
 		this.length			= length;
+		this.length2		= length2;
 		this.scale			= scale;
 		this.nulls			= nulls;
 		this.deflt			= deflt;
@@ -44,6 +46,10 @@ public class Db2Column {
 
 	public int getLength() {
 		return length;
+	}
+
+	public int getLength2() {
+		return length2;
 	}
 
 	public int getScale() {

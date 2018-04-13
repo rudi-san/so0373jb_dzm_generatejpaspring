@@ -31,7 +31,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		try {
-			doGener				("resources/config/so9900.xml");
+			doGener				("resources/config/TBKAU.xml");
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "JPA-Gener", JOptionPane.ERROR_MESSAGE);
 		}

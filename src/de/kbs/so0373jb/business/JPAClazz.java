@@ -37,16 +37,18 @@ public class JPAClazz extends Clazz {
 		boolean containsTime		= false;		
 		boolean containsTimestamp	= false;
 		for (Db2Column c : table.getColumnsOhneParent()) {
-			if (c.getColtype().name().equals("db2type_decimal"))		containsDec			= true;
-			if (c.getColtype().name().equals("db2type_date"))			containsDate		= true;
-			if (c.getColtype().name().equals("db2type_time"))			containsTime		= true;
-			if (c.getColtype().name().equals("db2type_timestmp"))		containsTimestamp	= true;
+			DB2Type db2type				= c.getColtype();
+			if (db2type==DB2Type.db2type_decimal)		containsDec			= true;
+			if (db2type==DB2Type.db2type_date)			containsDate		= true;
+			if (db2type==DB2Type.db2type_time)			containsTime		= true;
+			if (db2type==DB2Type.db2type_timestmp)		containsTimestamp	= true;
 		}
 		for (Db2Column c : table.getPk()) {
-			if (c.getColtype().name().equals("db2type_decimal"))		containsDec			= true;
-			if (c.getColtype().name().equals("db2type_date"))			containsDate		= true;
-			if (c.getColtype().name().equals("db2type_time"))			containsTime		= true;
-			if (c.getColtype().name().equals("db2type_timestmp"))		containsTimestamp	= true;
+			DB2Type db2type				= c.getColtype();
+			if (db2type==DB2Type.db2type_decimal)		containsDec			= true;
+			if (db2type==DB2Type.db2type_date)			containsDate		= true;
+			if (db2type==DB2Type.db2type_time)			containsTime		= true;
+			if (db2type==DB2Type.db2type_timestmp)		containsTimestamp	= true;
 		}
 		if (containsDec)			addImport				("java.math.BigDecimal");
 		if (containsDate)			addImport				("java.util.Date");
@@ -71,15 +73,6 @@ public class JPAClazz extends Clazz {
 			var.setFinalStatic		();
 			addVariable				(var);
 		}
-//	    Variablen für den Paged Read
-//		Variable pageQuery		= new Variable("pageQuery", Visibility.visibility_private, "TypedQuery<"+ccName+">", "null");
-//		pageQuery.setStatic		();
-//		pageQuery.addAnnot		("@Transient");
-//		addVariable				(pageQuery);
-//		Variable pageCount		= new Variable("pageCount", Visibility.visibility_private, "int", "0");
-//		pageCount.setStatic		();
-//		pageCount.addAnnot		("@Transient");
-//		addVariable				(pageCount);
 		
 //      KONSTRUKTOREN
 //		Default Konstruktor
@@ -482,7 +475,8 @@ public class JPAClazz extends Clazz {
 		String name				= col.getName();
 		String varName			= col.getVarName();
 //		Variablentyp ermitteln
-		String type				= col.getColtype().getJavaString();
+		DB2Type db2Type			= col.getColtype();
+		String type				= db2Type.getJavaString();
 //		Variable anlegen
 		Variable var			= new Variable(varName, Visibility.visibility_private, type, null);
 //		Annotations - ggf. ID
@@ -491,13 +485,19 @@ public class JPAClazz extends Clazz {
 		if  (col.isGeneratedKey()) 
 			var.addAnnot				("@GeneratedValue");			
 //		Annotation - bei Date-Attributen
-		if (type.equalsIgnoreCase("Date"))
+		if (db2Type==DB2Type.db2type_date)
 			var.addAnnot("@Temporal( TemporalType.DATE)");
+//		Annotation - bei LOB-Attributen
+		if (db2Type==DB2Type.db2type_blob)
+			var.addAnnot("@Lob");
 //		Annotations - Column
-		if (type.equalsIgnoreCase("String") && !col.getColtype().equals(DB2Type.db2type_xml))
+		if (type.equalsIgnoreCase("String") && db2Type!=DB2Type.db2type_xml)
 			var.addAnnot			("@Column(name=\""+name+"\",columnDefinition=\"char["+col.getLength()+"]\")");
 		else
-			var.addAnnot			("@Column(name=\""+name+"\")");
+			if (db2Type==DB2Type.db2type_blob)
+				var.addAnnot			("@Column(name=\""+name+"\",length="+col.getLength2()+")");
+			else
+				var.addAnnot			("@Column(name=\""+name+"\")");
 		clazz.addVariable		(var);
 //		get- und set-Methoden
 		createGetAndSet			(type.toString(), varName, clazz, false);

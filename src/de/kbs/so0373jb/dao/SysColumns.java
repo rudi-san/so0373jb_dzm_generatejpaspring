@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 public class SysColumns {
 
-	private static final String SQL	= "select NAME, TBNAME, TBCREATOR, COLNO, COLTYPE, LENGTH, SCALE, NULLS, DEFAULT, KEYSEQ"
+	private static final String SQL	= "select NAME, TBNAME, TBCREATOR, COLNO, COLTYPE, LENGTH, LENGTH2, SCALE, NULLS, DEFAULT, KEYSEQ"
 									+ " from SYSIBM.SYSCOLUMNS ";
 
 	private String 	name;
@@ -18,19 +18,21 @@ public class SysColumns {
 	private int	 	colno;
 	private String	coltype;
 	private int		length;
+	private int		length2;
 	private int		scale;
 	private String	nulls;
 	private String  defaultx;
 	private int		keyseq;
 	
 	public SysColumns (String name, String tbname, String tbcreator, int colno, String coltype,
-						int length, int scale, String nulls, String defaultx, int keyseq) {
+						int length, int length2, int scale, String nulls, String defaultx, int keyseq) {
 		this.name		= name;
 		this.tbname		= tbname;
 		this.tbcreator	= tbcreator;
 		this.colno		= colno;
 		this.coltype	= coltype;
 		this.length		= length;
+		this.length2		= length2;
 		this.scale		= scale;
 		this.nulls		= nulls;
 		this.defaultx	= defaultx;
@@ -76,9 +78,10 @@ public class SysColumns {
 										, rs.getString(5)
 										, rs.getInt(6)
 										, rs.getInt(7)
-										, rs.getString(8)
+										, rs.getInt(8)
 										, rs.getString(9)
-										, rs.getInt(10)));
+										, rs.getString(10)
+										, rs.getInt(11)));
 		}
 		return 							list;
 		
@@ -90,6 +93,7 @@ public class SysColumns {
 	public int getColno() 		{	return colno;		}
 	public String getColtype() 	{	return coltype;		}
 	public int getLength() 		{	return length;		}
+	public int getLength2()		{	return length2;		}
 	public int getScale() 		{	return scale;		}
 	public String getNulls() 	{	return nulls;		}
 	public String getDefault() 	{	return defaultx;	}
