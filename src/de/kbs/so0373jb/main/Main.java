@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 
 import de.kbs.so0373jb.business.Clazz;
-import de.kbs.so0373jb.business.FXClazz;
+//import de.kbs.so0373jb.business.FXClazz;
 import de.kbs.so0373jb.business.JPAClazz;
 import de.kbs.so0373jb.business.SpringRepository;
 import de.kbs.so0373jb.common.config.Configuration;
@@ -31,7 +31,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		try {
-			doGener				("resources/config/TBKAU.xml");
+			doGener				("resources/config/TBTST.xml");
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "JPA-Gener", JOptionPane.ERROR_MESSAGE);
 		}
@@ -47,17 +47,17 @@ public class Main {
 		tables					= configuration.getTables();
 
 		String message			= null;
-		if (configuration.isJavaFx())
-			message				= "<html>Es wurden JPA-Klassen (JavaFX-Binding) erstellt für die Tabellen<br><br>";
-		else
+//		if (configuration.isJavaFx())
+//			message				= "<html>Es wurden JPA-Klassen (JavaFX-Binding) erstellt für die Tabellen<br><br>";
+//		else
 			message				= "<html>Es wurden JPA-Klassen erstellt für die Tabellen<br><br>";
 
 		for (String[] split : tables) {
 			Db2Table table			= Db2Table.createTable(split[0], split[1]);
 			Clazz clazz				= null;
-			if (configuration.isJavaFx())
-				clazz					= new FXClazz(table);
-			else
+//			if (configuration.isJavaFx())
+//				clazz					= new FXClazz(table);
+//			else
 				clazz					= new JPAClazz(table);
 			writeFile				(configuration.getJpaPath(), table.getCcName(), clazz.toString());
 			SpringRepository repo	= new SpringRepository(table);

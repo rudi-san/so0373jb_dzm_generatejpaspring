@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-    <info organisation="de.kbs" module="SO0373JB" revision="0.1.0"/>
-	<configurations>
-  		<conf name="default" description="default" /> 
-  	</configurations>
+    <info organisation="de.kbs" module="so0373jb"/>
 	<dependencies>
 		<dependency org="com.ibm.db2_adapter" 		name="db2jcc4" 	rev="4.19.26"/> 
 		<dependency org="de.kbs.kbspropertyhandler" name="SO0003JC"	rev="1.1.0"/>

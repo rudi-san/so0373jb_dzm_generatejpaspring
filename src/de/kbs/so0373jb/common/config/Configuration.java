@@ -28,7 +28,7 @@ public class Configuration {
 	private static final String			JDBC_USER			= "jdbc.user";
 	private static final String			JDBC_PW				= "jdbc.pw";
 	private static final String			JDBC_PWCODE			= "jdbc.pwcode";
-	private static final String			IS_JAVAFX			= "fx.select";
+//	private static final String			IS_JAVAFX			= "fx.select";
 	
 	private Configuration(String fileName)  {
 		initialisiereKBSPropertyHandler		(fileName);
@@ -109,12 +109,12 @@ public class Configuration {
 	public String getJdbcUser () {
 		return				propertyContainer.getProperty(JDBC_USER);
 	}
-	public boolean isJavaFx () {
-		String	getString	= propertyContainer.getProperty(IS_JAVAFX);
-		if 	(getString==null)
-			return false;
-		return  getString.matches("[JjYy].*");
-	}
+//	public boolean isJavaFx () {
+//		String	getString	= propertyContainer.getProperty(IS_JAVAFX);
+//		if 	(getString==null)
+//			return false;
+//		return  getString.matches("[JjYy].*");
+//	}
 	public String getJdbcPw () {
 		String pw			= propertyContainer.getProperty(JDBC_PW);
 		if (pw==null) {
