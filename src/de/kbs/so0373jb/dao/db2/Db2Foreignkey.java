@@ -1,4 +1,4 @@
-package de.kbs.so0373jb.dao;
+package de.kbs.so0373jb.dao.db2;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-public class SysForeignkeys {
+public class Db2Foreignkey {
 
 	private String 	creator;
 	private String 	tbname;
@@ -15,7 +15,7 @@ public class SysForeignkeys {
 	private int		colseq;
 	private String	relname;
 	
-	public SysForeignkeys (String creator, String tbname, String relname, String colname, int colseq) {
+	public Db2Foreignkey (String creator, String tbname, String relname, String colname, int colseq) {
 		this.creator		= creator;
 		this.tbname			= tbname;
 		this.colname		= colname;
@@ -23,20 +23,20 @@ public class SysForeignkeys {
 		this.relname		= relname;
 	}
 	
-	public static ArrayList<SysForeignkeys> read (String tbcreator, String tbname, String relname) {
+	public static ArrayList<Db2Foreignkey> read (String tbcreator, String tbname, String relname) {
 		String sql 		= "select COLNAME, COLSEQ"
 						+ " from SYSIBM.SYSFOREIGNKEYS"
 						+ " where CREATOR = ? and TBNAME = ? and RELNAME = ?"
 						+ " order by COLNO";
-		ArrayList<SysForeignkeys> list		= new ArrayList<SysForeignkeys>();
+		ArrayList<Db2Foreignkey> list		= new ArrayList<Db2Foreignkey>();
 		try {
-			PreparedStatement stmt 			= DB2Connection.getStatement(sql);
+			PreparedStatement stmt 			= Db2Connection.getStatement(sql);
 			stmt.setString					(1, tbcreator);
 			stmt.setString					(2, tbname);
 			stmt.setString					(3, relname);
 			ResultSet rs					= stmt.executeQuery();
 			while (rs.next()) {
-				list.add (new SysForeignkeys	( tbcreator
+				list.add (new Db2Foreignkey	( tbcreator
 											, tbname
 											, relname
 											, rs.getString(1)

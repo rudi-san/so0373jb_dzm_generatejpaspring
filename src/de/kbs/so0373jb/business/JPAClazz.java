@@ -3,13 +3,14 @@ package de.kbs.so0373jb.business;
 import org.apache.log4j.Logger;
 
 import de.kbs.so0373jb.common.config.Configuration;
-import de.kbs.so0373jb.common.enums.DB2Type;
+import de.kbs.so0373jb.common.enums.ColType;
 import de.kbs.so0373jb.common.enums.Visibility;
-import de.kbs.so0373jb.db2.Db2Child;
-import de.kbs.so0373jb.db2.Db2Column;
-import de.kbs.so0373jb.db2.Db2Parent;
-import de.kbs.so0373jb.db2.Db2Table;
+import de.kbs.so0373jb.common.util.Utils;
 import de.kbs.so0373jb.main.Main;
+import de.kbs.so0373jb.model.Child;
+import de.kbs.so0373jb.model.Column;
+import de.kbs.so0373jb.model.Parent;
+import de.kbs.so0373jb.model.Table;
 import de.kbs.so1320jc.main.LoggingContainer;
 
 /** Klasse für die Generierung einer Java-Klasse für die JPA-Verarbeitung.
@@ -21,7 +22,7 @@ public class JPAClazz extends Clazz {
 
 	private static Logger logger		= LoggingContainer.getLoggerInstance().getRootLogger();
 
-	public JPAClazz (Db2Table table) {
+	public JPAClazz (Table table) {
 		super					( Configuration.getConfiguration().getPackage()+".jpa"
 								, table.getCcName()
 								, Visibility.visibility_public
@@ -36,19 +37,19 @@ public class JPAClazz extends Clazz {
 		boolean containsDate		= false;
 		boolean containsTime		= false;		
 		boolean containsTimestamp	= false;
-		for (Db2Column c : table.getColumnsOhneParent()) {
-			DB2Type db2type				= c.getColtype();
-			if (db2type==DB2Type.db2type_decimal)		containsDec			= true;
-			if (db2type==DB2Type.db2type_date)			containsDate		= true;
-			if (db2type==DB2Type.db2type_time)			containsTime		= true;
-			if (db2type==DB2Type.db2type_timestmp)		containsTimestamp	= true;
+		for (Column c : table.getColumnsOhneParent()) {
+			ColType db2type				= c.getColtype();
+			if (db2type==ColType.TYPE_DECIMAL)		containsDec			= true;
+			if (db2type==ColType.TYPE_DATE)			containsDate		= true;
+			if (db2type==ColType.TYPE_TIME)			containsTime		= true;
+			if (db2type==ColType.TYPE_TIMESTMP)		containsTimestamp	= true;
 		}
-		for (Db2Column c : table.getPk()) {
-			DB2Type db2type				= c.getColtype();
-			if (db2type==DB2Type.db2type_decimal)		containsDec			= true;
-			if (db2type==DB2Type.db2type_date)			containsDate		= true;
-			if (db2type==DB2Type.db2type_time)			containsTime		= true;
-			if (db2type==DB2Type.db2type_timestmp)		containsTimestamp	= true;
+		for (Column c : table.getPk()) {
+			ColType db2type				= c.getColtype();
+			if (db2type==ColType.TYPE_DECIMAL)		containsDec			= true;
+			if (db2type==ColType.TYPE_DATE)			containsDate		= true;
+			if (db2type==ColType.TYPE_TIME)			containsTime		= true;
+			if (db2type==ColType.TYPE_TIMESTMP)		containsTimestamp	= true;
 		}
 		if (containsDec)			addImport				("java.math.BigDecimal");
 		if (containsDate)			addImport				("java.util.Date");
@@ -67,7 +68,7 @@ public class JPAClazz extends Clazz {
 		variable.setFinalStatic	();
 		addVariable				(variable);
 
-		for (Db2Column col : table.getColumnsOhneParent()) {
+		for (Column col : table.getColumnsOhneParent()) {
 			Variable var			= new Variable(col.getVarName().toUpperCase()
 									, Visibility.visibility_public, "String", "\""+col.getVarName()+"\"");
 			var.setFinalStatic		();
@@ -80,24 +81,24 @@ public class JPAClazz extends Clazz {
 //		Komplett Konstruktor
 		Method complConstructor	= new Method 	( ccName, Visibility.visibility_public, "", table.getColumnsAsParameter()); 
 		if (!table.isGeneratedKey()) {
-			Db2Column[] pk			= table.getPk();
+			Column[] pk			= table.getPk();
 			if (pk.length>1) 
 				complConstructor.addSkeleton("SKEL002", "id");
 			else
 				complConstructor.addSkeleton("SKEL002", pk[0].getVarName());
 		}
-		for (Db2Column col : table.getColumnsOhneParent())	
+		for (Column col : table.getColumnsOhneParent())	
 			complConstructor.addSkeleton("SKEL002", col.getVarName());
-		for (Db2Parent parent : table.getParent())	{
+		for (Parent parent : table.getParent())	{
 			if (!parent.isComment()) {
 				String type = (table.isDoubleParent(parent)) ? parent.getRelname() :  parent.getCcName(); 		
-				complConstructor.addSkeleton("SKEL002", Db2Table.makeLowerCamelCase(type));
+				complConstructor.addSkeleton("SKEL002", Utils.makeLowerCamelCase(type));
 			}
 		}
 		addMethod				(complConstructor);
 
 //		PK einfügen
-		Db2Column[] pkCol		= table.getPk();
+		Column[] pkCol		= table.getPk();
 		String pkName			= "";
 		String pkVarName		= "";	
 		if  (pkCol.length>0) {
@@ -123,14 +124,14 @@ public class JPAClazz extends Clazz {
 			addVariable				(var);
 		}
 //      Columns hinzufügen		
-		for (Db2Column col : table.getColumnsOhneParent()) 
+		for (Column col : table.getColumnsOhneParent()) 
 			addVariable				(col, this, false);
 //		die Parent-Verbindungen hinzufügen
-		for (Db2Parent parent : table.getParent()) {
+		for (Parent parent : table.getParent()) {
 			boolean doubleParent = table.isDoubleParent(parent);
 			String type			= parent.getCcName();
 			String paName		= (doubleParent) ? parent.getRelname() : type;
-			paName				= Db2Table.makeLowerCamelCase(paName);
+			paName				= Utils.makeLowerCamelCase(paName);
 			Variable paVar		= new Variable	( paName
 												, Visibility.visibility_private
 												, type
@@ -161,11 +162,11 @@ public class JPAClazz extends Clazz {
 			createGetAndSet		(type, paName, this, parent.isComment());
 		}
 //		die Lists für die Childs hinzufügen
-		for (Db2Child fkChild :  table.getFkChild()) {
+		for (Child fkChild :  table.getFkChild()) {
 			boolean doubleChild 	= table.isDoubleChild(fkChild);
 			String fkTable			= fkChild.getTable();
 			String type				= "List<"+fkTable+">";
-			String chName1			= (doubleChild) ? Db2Table.makeLowerCamelCase(fkChild.getRelname()) : fkChild.getVar();
+			String chName1			= (doubleChild) ? Utils.makeLowerCamelCase(fkChild.getRelname()) : fkChild.getVar();
 			String chName2			= chName1+"s";
 			Variable fkVar			= new Variable	( chName2
 													, Visibility.visibility_private
@@ -181,13 +182,13 @@ public class JPAClazz extends Clazz {
 				complConstructor.addSkeleton	("SKEL003", "//", chName2, fkTable);				
 			else
 				complConstructor.addSkeleton	("SKEL003", "", chName2, fkTable);
-			Method fkAddMethod		= new Method( "add"+Db2Table.upperCaseStart(chName1)
+			Method fkAddMethod		= new Method( "add"+Utils.upperCaseStart(chName1)
 												, "void"
 												, new Parameter(fkChild.getVar(), fkTable));
 			fkAddMethod.addSkeleton	("SKEL004", chName2, "add", fkChild.getVar());
 			if (comment) 			fkAddMethod.setComment();
 			addMethod				(fkAddMethod);
-			Method fkRemoveMethod	= new Method( "remove"+Db2Table.upperCaseStart(chName1)
+			Method fkRemoveMethod	= new Method( "remove"+Utils.upperCaseStart(chName1)
 												, "void"
 												, new Parameter(fkChild.getVar(), fkTable));
 			fkRemoveMethod.addSkeleton	
@@ -230,12 +231,12 @@ public class JPAClazz extends Clazz {
 //		Die "toString()"-Methode, um eine Zeile insgesamt auszugeben (z. B. im Test)		
 		Method toStringMethod		= new Method	("toString", "String");
 		toStringMethod.addSkeleton	("SKEL005");
-		Db2Column[] pk				= table.getPk();
+		Column[] pk				= table.getPk();
 		if (pk.length>1) 
 			toStringMethod.addSkeleton	("SKEL006", ccName+"Pk", "id");
 		else
 			toStringMethod.addSkeleton	("SKEL006", pk[0].getName(), pk[0].getVarName());
-		for (Db2Column col : table.getColumnsOhneParent())	
+		for (Column col : table.getColumnsOhneParent())	
 			toStringMethod.addSkeleton("SKEL006", col.getName(), col.getVarName());
 		toStringMethod.addSkeleton	("SKEL007");
 		addMethod					(toStringMethod);
@@ -257,7 +258,7 @@ public class JPAClazz extends Clazz {
 //			guMethod.addSkeleton		("SKEL012A", ccName, pkCol[0].getVarName());
 //		else {
 //			guMethod.addSkeleton		("SKEL012", pkName);
-//			for (Db2Column pkC : pkCol) 
+//			for (SqlServerColumn pkC : pkCol) 
 //				guMethod.addSkeleton 		("SKEL013", pkC.getCamelCase(), pkC.getVarName());
 //			guMethod.addSkeleton 		("SKEL014", ccName);
 //		}
@@ -381,7 +382,7 @@ public class JPAClazz extends Clazz {
 //		addMethod				(method02);
 //	}
 	
-	private String addPkClass	(String className, Db2Column[] columns) {
+	private String addPkClass	(String className, Column[] columns) {
 		Clazz pkClass			= new Clazz( Configuration.getConfiguration().getPackage()+".jpa"
 								, className
 								, Visibility.visibility_public
@@ -393,11 +394,11 @@ public class JPAClazz extends Clazz {
 		boolean containsDate		= false;
 		boolean containsTime		= false;		
 		boolean containsTimestamp	= false;
-		for (Db2Column c : columns) {
-			if (c.getColtype().name().equals("db2type_decimal"))		containsDec			= true;
-			if (c.getColtype().name().equals("db2type_date"))			containsDate		= true;
-			if (c.getColtype().name().equals("db2type_time"))			containsTime		= true;
-			if (c.getColtype().name().equals("db2type_timestmp"))		containsTimestamp	= true;
+		for (Column c : columns) {
+			if (c.getColtype().name().equals("TYPE_DECIMAL"))		containsDec			= true;
+			if (c.getColtype().name().equals("TYPE_DATE"))			containsDate		= true;
+			if (c.getColtype().name().equals("TYPE_TIME"))			containsTime		= true;
+			if (c.getColtype().name().equals("TYPE_TIMESTMP"))		containsTimestamp	= true;
 		}
 		if (containsDec)			pkClass.addImport				("java.math.BigDecimal");
 		if (containsDate)			pkClass.addImport				("java.util.Date");
@@ -407,7 +408,7 @@ public class JPAClazz extends Clazz {
 		Variable variable		= new Variable("serialVersionUID", Visibility.visibility_private, "long", "1L");
 		variable.setFinalStatic	();
 		pkClass.addVariable		(variable);
-		for (Db2Column col : columns) 
+		for (Column col : columns) 
 			addVariable				(col, pkClass, false);
 //		Standard Konstruktor
 		pkClass.addMethod		(new Method 	( className, Visibility.visibility_public, ""));
@@ -416,7 +417,7 @@ public class JPAClazz extends Clazz {
 		for (int i=0;i<para.length;i++) 
 			para[i]					= new Parameter(columns[i].getVarName(), columns[i].getColtype().getJavaString());
 		Method complConstructor	= new Method 	( className, Visibility.visibility_public, "", para); 
-		for (Db2Column col : columns)	
+		for (Column col : columns)	
 			complConstructor.addSkeleton("SKEL002", col.getVarName());
 		pkClass.addMethod			(complConstructor);
 
@@ -425,7 +426,7 @@ public class JPAClazz extends Clazz {
 												, "int"
 												);
 		hashMethod.addSkeleton	("SKEL030", "17");
-		for (Db2Column col : columns) {
+		for (Column col : columns) {
 			if  (col.getColtype().isNumeric())
 				hashMethod.addSkeleton("SKEL031", col.getVarName());
 			else
@@ -441,7 +442,7 @@ public class JPAClazz extends Clazz {
 												);
 		equalsMethod.addSkeleton("SKEL037", className);
 		boolean start			= true;
-		for (Db2Column col : columns) {
+		for (Column col : columns) {
 			if (start) {
 				if  (col.getColtype().isNumeric())
 					equalsMethod.addSkeleton	("SKEL038A", "", col.getVarName());
@@ -462,7 +463,7 @@ public class JPAClazz extends Clazz {
 //		Die "toString()"-Methode, um eine Zeile insgesamt auszugeben (z. B. im Test)		
 		Method toStringMethod		= new Method	("toString", "String");
 		toStringMethod.addSkeleton	("SKEL005");
-		for (Db2Column col : columns)	
+		for (Column col : columns)	
 			toStringMethod.addSkeleton	("SKEL006", col.getName(), col.getVarName());
 		toStringMethod.addSkeleton	("SKEL007");
 		pkClass.addMethod			(toStringMethod);
@@ -470,12 +471,12 @@ public class JPAClazz extends Clazz {
 		return 					pkClass.toString();
 	}
 		
-	public static void addVariable (Db2Column col, Clazz clazz, boolean isId) {
+	public static void addVariable (Column col, Clazz clazz, boolean isId) {
 //		die verschiedenen Namen einlesen
 		String name				= col.getName();
 		String varName			= col.getVarName();
 //		Variablentyp ermitteln
-		DB2Type db2Type			= col.getColtype();
+		ColType db2Type			= col.getColtype();
 		String type				= db2Type.getJavaString();
 //		Variable anlegen
 		Variable var			= new Variable(varName, Visibility.visibility_private, type, null);
@@ -485,16 +486,16 @@ public class JPAClazz extends Clazz {
 		if  (col.isGeneratedKey()) 
 			var.addAnnot				("@GeneratedValue");			
 //		Annotation - bei Date-Attributen
-		if (db2Type==DB2Type.db2type_date)
+		if (db2Type==ColType.TYPE_DATE)
 			var.addAnnot("@Temporal( TemporalType.DATE)");
 //		Annotation - bei LOB-Attributen
-		if (db2Type==DB2Type.db2type_blob)
+		if (db2Type==ColType.TYPE_BLOB)
 			var.addAnnot("@Lob");
 //		Annotations - Column
-		if (type.equalsIgnoreCase("String") && db2Type!=DB2Type.db2type_xml)
+		if (type.equalsIgnoreCase("String") && db2Type!=ColType.TYPE_XML)
 			var.addAnnot			("@Column(name=\""+name+"\",columnDefinition=\"char["+col.getLength()+"]\")");
 		else
-			if (db2Type==DB2Type.db2type_blob)
+			if (db2Type==ColType.TYPE_BLOB)
 				var.addAnnot			("@Column(name=\""+name+"\",length="+col.getLength2()+")");
 			else
 				var.addAnnot			("@Column(name=\""+name+"\")");
@@ -504,13 +505,13 @@ public class JPAClazz extends Clazz {
 	}
 	
 	private static void createGetAndSet (String type, String varName, Clazz clazz, boolean isComment) {
-		Method getMethod		= new Method	( "get"+Db2Table.upperCaseStart(varName)
+		Method getMethod		= new Method	( "get"+Utils.upperCaseStart(varName)
 												, type
 												);
 		getMethod.addSkeleton	("SKEL001", "this."+varName);
 		if (isComment) 			getMethod.setComment();
 		clazz.addMethod			(getMethod);
-		Method setMethod		= new Method	( "set"+Db2Table.upperCaseStart(varName)
+		Method setMethod		= new Method	( "set"+Utils.upperCaseStart(varName)
 												, "void"
 												, new Parameter(varName, type)
 												);

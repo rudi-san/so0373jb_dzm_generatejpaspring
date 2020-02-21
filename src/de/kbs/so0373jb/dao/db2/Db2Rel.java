@@ -1,4 +1,4 @@
-package de.kbs.so0373jb.dao;
+package de.kbs.so0373jb.dao.db2;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-public class SysRels {
+public class Db2Rel {
 
 	private static final String SQL = "select CREATOR, TBNAME, RELNAME, REFTBNAME, REFTBCREATOR"
 									+ " from SYSIBM.SYSRELS ";
@@ -17,7 +17,7 @@ public class SysRels {
 	private String	reftbname;
 	private String	reftbcreator;
 	
-	public SysRels (String creator, String tbname, String relname, String reftbname, String reftbcreator) {
+	public Db2Rel (String creator, String tbname, String relname, String reftbname, String reftbcreator) {
 		this.creator		= creator;
 		this.tbname			= tbname;
 		this.relname		= relname;
@@ -25,11 +25,11 @@ public class SysRels {
 		this.reftbcreator	= reftbcreator;
 	}
 	
-	public static ArrayList<SysRels> readParent (String tbcreator, String tbname) {
+	public static ArrayList<Db2Rel> readParent (String tbcreator, String tbname) {
 		String sqlPlus	= " where CREATOR = ? and TBNAME = ?"
 						+ " order by REFTBNAME";
 		try {
-			PreparedStatement stmt 			= DB2Connection.getStatement(SQL+sqlPlus);
+			PreparedStatement stmt 			= Db2Connection.getStatement(SQL+sqlPlus);
 			stmt.setString					(1, tbcreator);
 			stmt.setString					(2, tbname);
 			return processResultSet			(stmt.executeQuery());
@@ -40,11 +40,11 @@ public class SysRels {
 		return null;
 	}
 	
-	public static ArrayList<SysRels> readChild (String reftbcreator, String reftbname) {
+	public static ArrayList<Db2Rel> readChild (String reftbcreator, String reftbname) {
 		String sqlPlus	= " where REFTBCREATOR = ? and REFTBNAME = ?"
 						+ " order by TBNAME";
 		try {
-			PreparedStatement stmt 			= DB2Connection.getStatement(SQL+sqlPlus);
+			PreparedStatement stmt 			= Db2Connection.getStatement(SQL+sqlPlus);
 			stmt.setString					(1, reftbcreator);
 			stmt.setString					(2, reftbname);
 			return processResultSet			(stmt.executeQuery());
@@ -55,10 +55,10 @@ public class SysRels {
 		return null;
 	}
 	
-	private static ArrayList<SysRels> processResultSet (ResultSet rs) throws SQLException {
-		ArrayList<SysRels> list		= new ArrayList<SysRels>();
+	private static ArrayList<Db2Rel> processResultSet (ResultSet rs) throws SQLException {
+		ArrayList<Db2Rel> list		= new ArrayList<Db2Rel>();
 		while (rs.next()) {
-			list.add (new SysRels		( rs.getString(1)
+			list.add (new Db2Rel		( rs.getString(1)
 										, rs.getString(2)
 										, rs.getString(3)
 										, rs.getString(4)

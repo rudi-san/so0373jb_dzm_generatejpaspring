@@ -1,11 +1,11 @@
 package de.kbs.so0373jb.business;
 
 import de.kbs.so0373jb.common.config.Configuration;
-import de.kbs.so0373jb.db2.Db2Table;
+import de.kbs.so0373jb.model.Table;
 
 public class SpringRepository extends Interfaze {
 
-	public SpringRepository(Db2Table table) {
+	public SpringRepository(Table table) {
 		super			( Configuration.getConfiguration().getPackage()+".repos"
 						, table.getCcName()+"Repository"
 						, "JpaRepository <"+table.getCcName()+", "+table.getPkType()+">"

@@ -20,7 +20,8 @@ import de.kbs.so0373jb.business.Clazz;
 import de.kbs.so0373jb.business.JPAClazz;
 import de.kbs.so0373jb.business.SpringRepository;
 import de.kbs.so0373jb.common.config.Configuration;
-import de.kbs.so0373jb.db2.Db2Table;
+//import de.kbs.so0373jb.db2.Db2Table;
+import de.kbs.so0373jb.model.Table;
 
 public class Main {
 	
@@ -53,7 +54,7 @@ public class Main {
 			message				= "<html>Es wurden JPA-Klassen erstellt für die Tabellen<br><br>";
 
 		for (String[] split : tables) {
-			Db2Table table			= Db2Table.createTable(split[0], split[1]);
+			Table table				= Table.createTable(split[0], split[1], configuration.getDbms());
 			Clazz clazz				= null;
 //			if (configuration.isJavaFx())
 //				clazz					= new FXClazz(table);

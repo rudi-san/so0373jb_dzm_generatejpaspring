@@ -1,4 +1,4 @@
-package de.kbs.so0373jb.dao;
+package de.kbs.so0373jb.dao.db2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,13 +9,13 @@ import java.sql.SQLException;
 import de.kbs.so0373jb.common.config.Configuration;
 import de.kbs.so0373jb.common.constants.Constants;
 
-public class DB2Connection {
+public class Db2Connection {
 
-	private static DB2Connection connection = null;
+	private static Db2Connection connection = null;
 	private static Connection con;
 	private static final String DRIVER 		= "com.ibm.db2.jcc.DB2Driver";
 	
-	private DB2Connection() throws SQLException {
+	private Db2Connection() throws SQLException {
 		
 		try {
 			Class.forName		(DRIVER);
@@ -36,7 +36,7 @@ public class DB2Connection {
 	
 	public static PreparedStatement getStatement (String sql) throws SQLException {
 			if (connection==null)
-				connection			= new DB2Connection();
+				connection			= new Db2Connection();
 			return					con.prepareStatement(sql);
 	}
 	

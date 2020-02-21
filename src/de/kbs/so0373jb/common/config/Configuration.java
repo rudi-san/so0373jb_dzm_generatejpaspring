@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import de.kbs.SO1300JC.PWDecode;
 import de.kbs.so0003jc.main.PropertyContainer;
+import de.kbs.so0373jb.common.enums.Dbms;
 import de.kbs.so1320jc.main.LoggingContainer;
 
 public class Configuration {
@@ -25,6 +26,8 @@ public class Configuration {
 	private static final String			WORK_PROJECT		= "work.project";
 	private static final String			WORK_ROOTPATH		= "work.rootpath";
 	private static final String			WORK_TABLE			= "work.table";
+	private static final String			WORK_DBMS			= "work.dbms";	
+	private static final String			WORK_URL			= "work.url";
 	private static final String			JDBC_USER			= "jdbc.user";
 	private static final String			JDBC_PW				= "jdbc.pw";
 	private static final String			JDBC_PWCODE			= "jdbc.pwcode";
@@ -62,6 +65,14 @@ public class Configuration {
 			logger					= lCont.getRootLogger();
 		}
 		return 					logger;	
+	}
+	
+	public Dbms getDbms () {
+		String dbmsString		= propertyContainer.getProperty(WORK_DBMS);
+		if (dbmsString==null) {
+			return			Dbms.DB2;
+		}
+		return Dbms.valueOf(dbmsString);
 	}
 	
 	public String getLogFile () {
