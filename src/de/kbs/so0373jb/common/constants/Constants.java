@@ -10,7 +10,7 @@ public class Constants {
 	public static final String XML_SKELS	= "SKELS";
 	public static final String XML_SKELNAME	= "SKELNAME";
 	public static final String XML_SKELFILE	= "resources/skeletons/DZMSKELS.xml";
-	public static final String DBURL 		= "jdbc:db2://hostbkn:7002/DBT2LN";
+	public static final String DB2_URL 		= "jdbc:db2://hostbkn:7002/DBT2LN";
 	public static final String DB2_GENER	= "DB2_GENERATED";
 	
 	/**

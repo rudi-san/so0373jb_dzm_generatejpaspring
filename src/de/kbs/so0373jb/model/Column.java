@@ -17,8 +17,9 @@ public class Column {
 	private String camelCase;
 	private String varName;
 	private boolean isPk	= false;
+	private boolean isGenerated;
 	
-	public Column (String name, int colno, ColType coltype, int length, int length2, int scale, String nulls, String deflt, boolean isKey ) {
+	public Column (String name, int colno, ColType coltype, int length, int length2, int scale, String nulls, String deflt, boolean isKey, boolean isGenerated ) {
 		this.name			= name;
 		this.colno			= colno;
 		this.coltype		= coltype;
@@ -28,6 +29,7 @@ public class Column {
 		this.nulls			= nulls;
 		this.deflt			= deflt;
 		this.isKey			= isKey;
+		this.isGenerated	= isGenerated;
 		camelCase			= Utils.makeCamelCase(name);
 //      Variablenname = CamelCase-Name mit kleinem Anfangsbuchstaben
 		varName				= Utils.makeLowerCamelCase(name);
@@ -46,13 +48,14 @@ public class Column {
 
 	public void setPk () 			{	isPk = true;		}
 	public boolean isPk () 			{	return this.isPk;	}
+	public boolean isGenerated ()	{	return isGenerated;	}
 	
-	public boolean isGeneratedKey () {		
-		if  (isKey && ( deflt.equalsIgnoreCase("I") || deflt.equalsIgnoreCase("J") ) )
-			return true;
-		else
-			return false;
-	}
+//	public boolean isGeneratedKey () {		
+//		if  (isKey && ( deflt.equalsIgnoreCase("I") || deflt.equalsIgnoreCase("J") ) )
+//			return true;
+//		else
+//			return false;
+//	}
 	
 	
 	

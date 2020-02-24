@@ -483,7 +483,7 @@ public class JPAClazz extends Clazz {
 //		Annotations - ggf. ID
 		if  (isId)
 			var.addAnnot				("@Id");
-		if  (col.isGeneratedKey()) 
+		if  (col.isGenerated()) 
 			var.addAnnot				("@GeneratedValue");			
 //		Annotation - bei Date-Attributen
 		if (db2Type==ColType.TYPE_DATE)

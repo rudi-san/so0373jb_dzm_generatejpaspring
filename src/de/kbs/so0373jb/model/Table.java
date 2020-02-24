@@ -104,14 +104,15 @@ public class Table {
 																, col.getScale()
 																, col.getNulls()
 																, col.getDefault()
-																, col.isKey());
+																, col.isKey()
+																, col.isGenerated());
 		//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
 					if  (col.isKey()) 
 						table.addPk					(column);
 					else
 		//				alle anderen Felder laufen in die columnList
 						table.addColumn				(column);
-					if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
+					if  (col.isGenerated())
 						table.setGeneratedKey		(true);
 				}
 			}
@@ -124,7 +125,7 @@ public class Table {
 			String relname				= rel.getRelname();
 			String reftbcreator			= rel.getReftbcreator();
 			String reftbname			= rel.getReftbname();
-			Parent parent			= new Parent(reftbname, relname);
+			Parent parent				= new Parent(reftbname, relname);
 			ArrayList<Db2Foreignkey> list03 
 										= Db2Foreignkey.read(creator, tbname, relname);
 			for (Db2Foreignkey key : list03) {
@@ -182,8 +183,8 @@ public class Table {
 		ArrayList<SqlServerColumn> list01= SqlServerColumn.read(creator, tbname);	
 		logger.info					("Anzahl Columns : " + list01.size());
 		for (SqlServerColumn col : list01) {
-			if (!col.getName().startsWith(Constants.DB2_GENER)) {
-				ColType type				= ColType.findTypeDb2(col.getColtype());
+//			if (!col.getName().startsWith(Constants.DB2_GENER)) {
+				ColType type				= ColType.findTypeSqlServer(col.getColtype());
 				if (type!=null) {
 					Column column			= new Column	( col.getName()
 																, col.getColno()
@@ -193,17 +194,18 @@ public class Table {
 																, col.getScale()
 																, col.getNulls()
 																, col.getDefault()
-																, col.isKey());
+																, col.isKey()
+																, col.isGenerated());
 		//			Wenn die Column Teil des PKs ist, wird die Information in pkList abgelegt
 					if  (col.isKey()) 
 						table.addPk					(column);
 					else
 		//				alle anderen Felder laufen in die columnList
 						table.addColumn				(column);
-					if  (col.getDefault().equalsIgnoreCase("I")||col.getDefault().equalsIgnoreCase("J"))
+					if  (col.isGenerated())
 						table.setGeneratedKey		(true);
 				}
-			}
+//			}
 		}
 
 //		die Parent-Verbindungen werden in der parentList abgelegt
@@ -213,7 +215,7 @@ public class Table {
 			String relname				= rel.getRelname();
 			String reftbcreator			= rel.getReftbcreator();
 			String reftbname			= rel.getReftbname();
-			Parent parent			= new Parent(reftbname, relname);
+			Parent parent				= new Parent(reftbname, relname);
 			ArrayList<SqlServerForeignkey> list03 
 										= SqlServerForeignkey.read(creator, tbname, relname);
 			for (SqlServerForeignkey key : list03) {

@@ -32,7 +32,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		try {
-			doGener				("resources/config/TBTST.xml");
+			doGener				("resources/config/SqlServer.xml");
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "JPA-Gener", JOptionPane.ERROR_MESSAGE);
 		}

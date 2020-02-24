@@ -99,6 +99,7 @@ public class Db2Column {
 	public String getDefault() 	{	return defaultx;	}
 	public int getKeyseq() 		{	return keyseq;		}
 	public boolean isKey()		{	return keyseq>0;	}
+	public boolean isGenerated(){	return defaultx.equalsIgnoreCase("I")||defaultx.equalsIgnoreCase("J");	}
 	
 	public String toString () {
 		StringBuffer buf		= new StringBuffer("DB2Columns=");

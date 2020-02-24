@@ -9,8 +9,21 @@ import javax.swing.JOptionPane;
 
 public class SqlServerRel {
 
-	private static final String SQL = "select CREATOR, TBNAME, RELNAME, REFTBNAME, REFTBCREATOR"
-									+ " from SYSIBM.SYSRELS ";
+	private static final String SQL = 	"SELECT	child.TABLE_SCHEMA, 									" + 
+										"    	child.TABLE_NAME,		 								" + 
+										"    	parent.CONSTRAINT_NAME, 								" + 	
+										"    	parent.TABLE_NAME,										" + 
+										"       parent.TABLE_SCHEMA		 								" + 
+										"FROM 	INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS a,			" + 
+										"     	INFORMATION_SCHEMA.KEY_COLUMN_USAGE child,				" + 
+										"     	INFORMATION_SCHEMA.KEY_COLUMN_USAGE parent				" + 
+										"where 	child.CONSTRAINT_CATALOG = a.CONSTRAINT_CATALOG 		" + 
+										"  AND  child.CONSTRAINT_SCHEMA = a.CONSTRAINT_SCHEMA 			" + 
+										"  AND  child.CONSTRAINT_NAME = a.CONSTRAINT_NAME 				" + 
+										"  AND  parent.CONSTRAINT_SCHEMA = a.UNIQUE_CONSTRAINT_SCHEMA	" + 
+										"  AND  parent.CONSTRAINT_NAME = a.UNIQUE_CONSTRAINT_NAME 		" 
+//										+"  AND  parent.ORDINAL_POSITION = child.ORDINAL_POSITION 		"
+										;
 	private String 	creator;
 	private String 	tbname;
 	private String 	relname;
@@ -26,8 +39,8 @@ public class SqlServerRel {
 	}
 	
 	public static ArrayList<SqlServerRel> readParent (String tbcreator, String tbname) {
-		String sqlPlus	= " where CREATOR = ? and TBNAME = ?"
-						+ " order by REFTBNAME";
+		String sqlPlus	= " and child.TABLE_SCHEMA = ? and child.TABLE_NAME = ?"
+						+ " order by parent.TABLE_NAME ";
 		try {
 			PreparedStatement stmt 			= SqlServerConnection.getStatement(SQL+sqlPlus);
 			stmt.setString					(1, tbcreator);
@@ -41,8 +54,8 @@ public class SqlServerRel {
 	}
 	
 	public static ArrayList<SqlServerRel> readChild (String reftbcreator, String reftbname) {
-		String sqlPlus	= " where REFTBCREATOR = ? and REFTBNAME = ?"
-						+ " order by TBNAME";
+		String sqlPlus	= 	" and parent.TABLE_SCHEMA = ? and parent.TABLE_NAME = ?"  +
+				 			" order by child.TABLE_NAME ";
 		try {
 			PreparedStatement stmt 			= SqlServerConnection.getStatement(SQL+sqlPlus);
 			stmt.setString					(1, reftbcreator);
@@ -72,5 +85,14 @@ public class SqlServerRel {
 	public String getRelname() 		{	return relname;		}
 	public String getReftbname() 	{	return reftbname;	}
 	public String getReftbcreator() {	return reftbcreator;}
-
+	
+	public String toString () {
+		StringBuffer buf		= new StringBuffer("SQL Server Rel=");
+		buf.append				("[creator="+creator);
+		buf.append				("],[tbname="+tbname);
+		buf.append				("],[relname="+relname);
+		buf.append				("],[reftbname="+reftbname);
+		buf.append				("],[reftbcreator="+reftbcreator+"]");
+		return					buf.toString();
+	}
 }

@@ -9,8 +9,8 @@ import javax.swing.JOptionPane;
 
 public class SqlServerColumn {
 
-	private static final String SQL	= "select NAME, TBNAME, TBCREATOR, COLNO, COLTYPE, LENGTH, LENGTH2, SCALE, NULLS, DEFAULT, KEYSEQ"
-									+ " from SYSIBM.SYSCOLUMNS ";
+	private static final String SQL	= "select 	COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA, ORDINAL_POSITION, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_SCALE, IS_NULLABLE, COLUMN_DEFAULT " + 
+									  "from 	INFORMATION_SCHEMA.COLUMNS ";
 
 	private String 	name;
 	private String 	tbname;
@@ -18,29 +18,29 @@ public class SqlServerColumn {
 	private int	 	colno;
 	private String	coltype;
 	private int		length;
-	private int		length2;
 	private int		scale;
 	private String	nulls;
 	private String  defaultx;
-	private int		keyseq;
+	private boolean	isKey;
+	private boolean	isGenerated;
 	
 	public SqlServerColumn (String name, String tbname, String tbcreator, int colno, String coltype,
-						int length, int length2, int scale, String nulls, String defaultx, int keyseq) {
+						int length, int scale, String nulls, String defaultx, boolean isKey, boolean isGenerated) {
 		this.name		= name;
 		this.tbname		= tbname;
 		this.tbcreator	= tbcreator;
 		this.colno		= colno;
 		this.coltype	= coltype;
 		this.length		= length;
-		this.length2		= length2;
 		this.scale		= scale;
 		this.nulls		= nulls;
 		this.defaultx	= defaultx;
-		this.keyseq		= keyseq;
+		this.isKey		= isKey;
+		this.isGenerated = isGenerated;
 	}
 	
 	public static ArrayList<SqlServerColumn> read (String tbcreator, String tbname) {
-		String sqlPlus 	= " where TBCREATOR = ? and TBNAME = ?";
+		String sqlPlus 	= "where 	TABLE_SCHEMA = ? and TABLE_NAME = ?";
 		try {
 			PreparedStatement stmt 			= SqlServerConnection.getStatement(SQL+sqlPlus);
 			stmt.setString					(1, tbcreator);
@@ -78,41 +78,90 @@ public class SqlServerColumn {
 										, rs.getString(5)
 										, rs.getInt(6)
 										, rs.getInt(7)
-										, rs.getInt(8)
+										, rs.getString(8)
 										, rs.getString(9)
-										, rs.getString(10)
-										, rs.getInt(11)));
+										, isKey(rs.getString(1),rs.getString(2),rs.getString(3))
+										, isGenerated(rs.getString(1),rs.getString(2),rs.getString(3))));
 		}
-		return 							list;
-		
+		return 							list;		
 	}
 	
-	public String getName() 	{	return name;		}
-	public String getTbname() 	{	return tbname;		}
-	public String getTbcreator(){	return tbcreator;	}
-	public int getColno() 		{	return colno;		}
-	public String getColtype() 	{	return coltype;		}
-	public int getLength() 		{	return length;		}
-	public int getLength2()		{	return length2;		}
-	public int getScale() 		{	return scale;		}
-	public String getNulls() 	{	return nulls;		}
-	public String getDefault() 	{	return defaultx;	}
-	public int getKeyseq() 		{	return keyseq;		}
-	public boolean isKey()		{	return keyseq>0;	}
+	private static boolean isKey (String colName, String tabName, String schema) {
+		String sqlKey					= "select 	0 " + 
+										  "from 	INFORMATION_SCHEMA.TABLE_CONSTRAINTS a, "	+ 
+										  "		    INFORMATION_SCHEMA.KEY_COLUMN_USAGE b " 		+ 
+										  "where	a.TABLE_SCHEMA = ? " 						+ 
+										  "  and	a.TABLE_NAME = ? " 							+ 
+										  "  and	a.CONSTRAINT_TYPE = 'PRIMARY KEY' " 		+ 
+										  "  and    a.CONSTRAINT_NAME = b.CONSTRAINT_NAME " 		+ 
+										  "  and    b.COLUMN_NAME = ?";
+
+		try {
+			PreparedStatement stmt 			= SqlServerConnection.getStatement(sqlKey);
+			stmt.setString					(1, schema);
+			stmt.setString					(2, tabName);
+			stmt.setString					(3, colName);
+			ResultSet rs					= stmt.executeQuery();
+		
+			if  (rs.next())					return true;
+			else							return false;
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog	(null, e.getMessage());
+			System.exit						(0);
+		}
+		return false;
+	}
+
+	private static boolean isGenerated (String colName, String tabName, String schema) {
+		String sqlKey					= "SELECT 	0                             " 
+										+ "FROM 	INFORMATION_SCHEMA.COLUMNS    " 
+										+ "WHERE	TABLE_SCHEMA = ?              " 
+										+ "  and	TABLE_NAME = ?                " 
+										+ "  and    COLUMN_NAME = ?               " 
+										+ "  AND	COLUMNPROPERTY( OBJECT_ID(TABLE_NAME),COLUMN_NAME,'ISIdentity') = 1";
+
+		try {
+			PreparedStatement stmt 			= SqlServerConnection.getStatement(sqlKey);
+			stmt.setString					(1, schema);
+			stmt.setString					(2, tabName);
+			stmt.setString					(3, colName);
+			ResultSet rs					= stmt.executeQuery();
+		
+			if  (rs.next())					return true;
+			else							return false;
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog	(null, e.getMessage());
+			System.exit						(0);
+		}
+		return false;
+	}
+	
+	public String 	getName() 		{	return name;		}
+	public String 	getTbname() 	{	return tbname;		}
+	public String 	getTbcreator()	{	return tbcreator;	}
+	public int 		getColno() 		{	return colno;		}
+	public String 	getColtype() 	{	return coltype;		}
+	public int 		getLength() 	{	return length;		}
+	public int 		getScale() 		{	return scale;		}
+	public String 	getNulls() 		{	return nulls;		}
+	public String 	getDefault() 	{	return defaultx;	}
+	public boolean 	isKey()	 		{	return isKey;		}
+	public boolean 	isGenerated()	{	return isGenerated;	}
 	
 	public String toString () {
-		StringBuffer buf		= new StringBuffer("DB2Columns=");
+		StringBuffer buf		= new StringBuffer("SQLServerColumns=");
 		buf.append				("[name="+name);
 		buf.append				("],[tbname="+tbname);
 		buf.append				("],[tbcreator="+tbcreator);
 		buf.append				("],[colno="+colno);
 		buf.append				("],[coltype="+coltype);
 		buf.append				("],[length="+length);
-		buf.append				("],[length2="+length2);
+		buf.append				("],[length2="+length);
 		buf.append				("],[scale="+scale);
 		buf.append				("],[nulls="+nulls);
 		buf.append				("],[defaultx="+defaultx);
-		buf.append				("],[keyseq="+keyseq+"]");
+		buf.append				("],[isKey="+isKey+"]");
+		buf.append				("],[isGenerated="+isGenerated+"]");
 		return					buf.toString();
 	}
 }

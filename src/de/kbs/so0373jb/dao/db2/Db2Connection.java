@@ -31,7 +31,7 @@ public class Db2Connection {
 			System.exit			(0);
 
 		}
-		con 					= DriverManager.getConnection	(Constants.DBURL, user, pw);
+		con 					= DriverManager.getConnection	(Constants.DB2_URL, user, pw);
 	}
 	
 	public static PreparedStatement getStatement (String sql) throws SQLException {

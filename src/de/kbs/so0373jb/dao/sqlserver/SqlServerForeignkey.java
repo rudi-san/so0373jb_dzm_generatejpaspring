@@ -24,10 +24,12 @@ public class SqlServerForeignkey {
 	}
 	
 	public static ArrayList<SqlServerForeignkey> read (String tbcreator, String tbname, String relname) {
-		String sql 		= "select COLNAME, COLSEQ"
-						+ " from SYSIBM.SYSFOREIGNKEYS"
-						+ " where CREATOR = ? and TBNAME = ? and RELNAME = ?"
-						+ " order by COLNO";
+		String sql 		= "select 	COLUMN_NAME, ORDINAL_POSITION          "
+						+ "from 	INFORMATION_SCHEMA.KEY_COLUMN_USAGE    "
+						+ "where 	TABLE_SCHEMA = ?                       "
+						+ "  and 	TABLE_NAME = ?                         "
+						+ "  and 	CONSTRAINT_NAME = ?                    "
+						+ "order by ORDINAL_POSITION                       ";
 		ArrayList<SqlServerForeignkey> list		= new ArrayList<SqlServerForeignkey>();
 		try {
 			PreparedStatement stmt 			= SqlServerConnection.getStatement(sql);
